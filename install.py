@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 
 class Service:
@@ -12,13 +13,19 @@ class Service:
             f.write("\n")
             f.write("deb http://mirrors.ustc.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
 
+    @staticmethod
+    def prepare():
+        os.system("sudo apt-get update")
+        os.system("sudo apt-get upgrade")
+
     # samba hassbian and others
     @staticmethod
     def install_samba():
         if os.system("hassbian-config") == 0:
-            os.system("sudo hassbian-config install samba")
-            os.system("sudo smbpasswd -a pi")
-            os.system("sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.original")
+            subprocess.run("sudo hassbian-config install samba", shell=True)
+            subprocess.run("sudo smbpasswd -a pi", shell=True)
+            subprocess.run("sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.original", shell=True)
+
             with open("/etc/samba/smb.conf", 'w') as f:
                 f.write(
                     "[global]\n"
@@ -45,9 +52,9 @@ class Service:
                     "hosts allow ="
                 )
         else:
-            os.system("sudo apt-get install samba")
-            os.system("sudo smbpasswd -a pi")
-            os.system("sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.original")
+            subprocess.run("sudo apt-get install samba", shell=True)
+            subprocess.run("sudo smbpasswd -a pi", shell=True)
+            subprocess.run("sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.original", shell=True)
             with open("/etc/samba/smb.conf", 'w') as f:
                 f.write(
                     "[global]\n"
@@ -79,33 +86,47 @@ class Service:
         if os.system("hassbian-config") == 0:
             os.system("sudo hassbian-config install mosquitto")
         else:
-            os.system("sudo apt-get install mosquitto")
-            os.system("sudo systemctl start mosquitto")
+            subprocess.run("sudo apt-get install mosquitto", shell=True)
+            # subprocess.run("sudo systemctl start mosquitto", shell=True)
 
     def add_wifi(self):
-        print("Add WIFI,Please Enter your SSID and PASSWORD")
+        print(">>>Add WIFI,Please Enter your SSID and PASSWORD")
         SSID = input(">")
         PASSWORD = input(">")
+
         if SSID is not None:
-            with open("/etc/wpa_supplicant/wpa_supplicant.conf", 'w') as f:
-                f.write("country=CN")
-                f.write("\n")
-                f.write("ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev")
-                f.write("\n")
-                f.write("update_config=1")
-                f.write("\n")
-                f.write("\n")
-                f.write("network={")
-                f.write("\n")
-                f.write("\t\tssid=\"" + SSID + "\"")
-                f.write("\n")
-                f.write("\t\tpsk=\"" + PASSWORD + "\"")
-                f.write("\n")
-                f.write("}")
-                f.write("\n")
+            print(">>>Enter yes to confirm your WIFI infomation.(yes or no)")
+            confirm = input(">")
+            if confirm == "YES" or not confirm != "yes":
+                with open("/etc/wpa_supplicant/wpa_supplicant.conf", 'w') as f:
+                    f.write("country=CN")
+                    f.write("\n")
+                    f.write("ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev")
+                    f.write("\n")
+                    f.write("update_config=1")
+                    f.write("\n")
+                    f.write("\n")
+                    f.write("network={")
+                    f.write("\n")
+                    f.write("\t\tssid=\"" + SSID + "\"")
+                    f.write("\n")
+                    f.write("\t\tpsk=\"" + PASSWORD + "\"")
+                    f.write("\n")
+                    f.write("}")
+                    f.write("\n")
+            else:
+                print(">>>SSID is None,Please Enter again.")
+                self.add_wifi()
         else:
-            print("SSID is None,Please Enter again.")
+            print("SSID can not be None")
             self.add_wifi()
+
+            # print(">>>Enter yes to confirm your WIFI infomation.(yes or no)")
+            # confirm = input(">")
+            # if confirm == "YES" or not confirm != "yes":
+            #     pass
+            # else:
+            #     self.add_wifi()
 
 
 class InstallHA:
@@ -115,13 +136,19 @@ class InstallHA:
             if os.system("hassbian-config") == 0:
                 pass
             else:
-                print("HomeAssistant will install in the virtual environment,wait for a few minute.")
-                os.system("sudo python3 -m venv homeassistant")
-                os.system("cd homeassistant")
-                os.system("sudo source bin/activate")
-                os.system("sudo python3 -m pip install wheel")
-                os.system("sudo python3 -m pip install homeassistant")
-        except ConnectionError:
+                print(">>>HomeAssistant will install in the virtual environment,wait for a few minute.")
+                subprocess.run("sudo python3 -m venv homeassistant", shell=True)
+                subprocess.run("cd homeassistant", shell=True)
+                with open("script.sh", 'w') as f:
+                    f.write("#!/bin/bash\n"
+                            ". /path/to/env/bin/activate")
+                subprocess.run("sudo /bin/bash --rcfile /path/to/script.sh", shell=True)
+
+                subprocess.run("sudo python3 -m pip install wheel", shell=True)
+                subprocess.run("sudo python3 -m pip install homeassistant", shell=True)
+                subprocess.run("hass --open-ui", shell=True)
+
+        except Exception:
             self.install_ha()
         finally:
             # 自启动
@@ -135,6 +162,7 @@ if __name__ == '__main__':
     service = Service()
     service.change_source()
     service.add_wifi()
+    service.prepare()
 
     install_ha = InstallHA()
     install_ha.install_ha()
