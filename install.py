@@ -18,7 +18,7 @@ class Service:
     @staticmethod
     def prepare():
         os.system("sudo apt-get update")
-        # os.system("sudo apt-get upgrade")
+        os.system("sudo apt-get upgrade")
 
     # samba hassbian and others
     def install_samba(self):
@@ -139,13 +139,72 @@ class Service:
         subprocess.run("sudo apt-get install fonts-wqy-zenhei -y", shell=True)
         subprocess.run("sudo apt-get install scim-pinyin -y", shell=True)
 
+    # HA auto start
+    def auto_start(self):
+        if os.system("hassbian-config") == 0:
+            pass
+        else:
+            print(">>>Please enter the homeassistant path:")
+            ha_path = input(">")
+            print(">>>Confirm you path..(yes or no)")
+            confirm = input(">")
+            if confirm == "YES" or not confirm != "yes":
+                with open("/etc/systemd/system/home-assistant@homeassistant.service", 'w') as f:
+                    f.write("[Unit]\n"
+                            "Description=Home Assistant\n"
+                            "After=network.target\n"
+                            "[Service]\n"
+                            "Type=simple\n"
+                            "User=homeassistant\n"
+                            "Environment=PATH=\"$VIRTUAL_ENV/bin:$PATH\"\n"
+                            "ExecStart=/srv/homeassistant/homeassistant_venv/bin/hass -c " + ha_path + "\n"
+                            "[Install]\n"
+                            "WantedBy=multi-user.target\n")
+            else:
+                self.auto_start()
+        subprocess.run("sudo systemctl daemon-reload", shell=True)
+
 
 if __name__ == '__main__':
     # /home/pi/.homeassistant
-    service = Service()
-    service.change_source()
-    service.add_wifi()
-    service.prepare()
-    service.install_font_pinyin()
-    service.install_samba()
-    service.install_mosquitto()
+    # service = Service()
+    # service.change_source()
+    # service.add_wifi()
+    # service.prepare()
+    # service.install_font_pinyin()
+    # service.install_samba()
+    # service.install_mosquitto()
+    # service.auto_start()
+    import argparse
+    import sys
+    parser = argparse.ArgumentParser(description="Linux Config Script")
+    parser.add_argument("--source", "-s", action="store_true", help="Change Linux Source")
+    parser.add_argument("--addWifi", "-a", action="store_true", help="Add WIFI config")
+    parser.add_argument("--prepare", "-p", action="store_true", help="update system")
+    parser.add_argument("--fontPinyin", "-f", action="store_true", help="Install font and pinyin")
+    parser.add_argument("--samba", "-sb", action="store_true", help="Install Samba")
+    parser.add_argument("--mosquitto", "-m", action="store_true", help="Install mosquitto broker")
+    parser.add_argument("--autostart", "-at", action="store_true", help="Add HA to auto start")
+
+    args = parser.parse_args()
+    args = vars(args)
+    if len(sys.argv) == 1:
+        parser.print_help()
+    else:
+        service = Service()
+        if args["source"]:
+            service.change_source()
+        if args["addWifi"]:
+            service.add_wifi()
+        if args["prepare"]:
+            service.prepare()
+        if args["fontPinyin"]:
+            service.install_font_pinyin()
+        if args["samba"]:
+            service.install_samba()
+        if args["mosquitto"]:
+            service.install_mosquitto()
+        if args["autostart"]:
+            service.auto_start()
+
+
