@@ -166,15 +166,6 @@ class Service:
 
 
 if __name__ == '__main__':
-    # /home/pi/.homeassistant
-    # service = Service()
-    # service.change_source()
-    # service.add_wifi()
-    # service.prepare()
-    # service.install_font_pinyin()
-    # service.install_samba()
-    # service.install_mosquitto()
-    # service.auto_start()
     import argparse
     import sys
     parser = argparse.ArgumentParser(description="Linux Config Script")
