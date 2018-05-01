@@ -1,4 +1,4 @@
-# HA Install Script
+# Linux Service Install Script
 
 ## 使用说明
 将此文件放入任意路径下,使用sudo执行
