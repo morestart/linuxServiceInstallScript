@@ -193,9 +193,7 @@ if __name__ == '__main__':
             service.install_font_pinyin()
         if args["samba"]:
             service.install_samba()
-        if args["mosquitto"]:
+        if args['mosquitto']:
             service.install_mosquitto()
-        if args["autostart"]:
+        if args['autostart']:
             service.auto_start()
-
-
