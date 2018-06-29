@@ -103,8 +103,8 @@ class Service:
     # add wifi infomation
     def add_wifi(self):
         print(">>>Add WIFI,Please Enter your SSID and PASSWORD")
-        SSID = input(">")
-        PASSWORD = input(">")
+        SSID = input("SSID>")
+        PASSWORD = input("PASSWORD>")
 
         if SSID is not None:
             print(">>>Enter yes to confirm your WIFI infomation.(yes or no)")
