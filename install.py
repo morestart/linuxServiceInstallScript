@@ -10,9 +10,13 @@ class Service:
     @staticmethod
     def change_source():
         with open("/etc/apt/sources.list", 'w') as f:
-            f.write("deb http://mirrors.zju.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
-            f.write("\n")
-            f.write("deb http://mirrors.ustc.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
+            f.write("deb http://mirrors.aliyun.com/raspbian/raspbian/ stretch main non-free contrib\n" 
+                    "deb-src http://mirrors.aliyun.com/raspbian/raspbian/ stretch main non-free contrib\n"
+                    "deb http://mirrors.ustc.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
+        with open("/etc/pip.conf", 'w') as f:
+            f.write("[global]\n"
+                    "trusted-host=mirrors.aliyun.com\n"
+                    "index-url=https://mirrors.aliyun.com/pypi/simple/")
 
     # update os
     @staticmethod
