@@ -12,7 +12,8 @@ class Service:
         with open("/etc/apt/sources.list", 'w') as f:
             f.write("deb http://mirrors.aliyun.com/raspbian/raspbian/ stretch main non-free contrib\n" 
                     "deb-src http://mirrors.aliyun.com/raspbian/raspbian/ stretch main non-free contrib\n"
-                    "deb http://mirrors.ustc.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
+                    "deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
+                    "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
         with open("/etc/pip.conf", 'w') as f:
             f.write("[global]\n"
                     "trusted-host=mirrors.aliyun.com\n"
