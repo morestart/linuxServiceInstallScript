@@ -67,15 +67,19 @@ class Service:
     def change_source(self):
         try:
             subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak")
+        except FileNotFoundError:
+            Logger.error("can't find pip conf files")
+        try:
             subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak")
-        except Exception:
-            Logger.error(Exception)
-        with open(self.apt_source, 'w+') as f:
-            f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
-                    "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
-        with open(self.pip_source, 'w+') as f:
-            f.write("[global]\n"
-                    "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
+        except FileNotFoundError:
+            Logger.error("can't find files")
+        finally:
+            with open(self.apt_source, 'w+') as f:
+                f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
+                        "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
+            with open(self.pip_source, 'w+') as f:
+                f.write("[global]\n"
+                        "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
 
     # 更新源与软件
     @staticmethod
