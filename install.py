@@ -125,18 +125,19 @@ class Install:
     import argparse
     import sys
     parser = argparse.ArgumentParser(description="HomeAssistant Install Script")
-    parser.add_argument("--wifi", "-w", help="配置wifi信息")
-    parser.add_argument("--version", "-v", help="获取版本信心")
-    parser.add_argument("--source", "-s", help="更换apt,pip源")
-    parser.add_argument("--prepare", "-p", help="更新软件列表与软件")
-    parser.add_argument("--installHA", "-i", help="安装HomeAssistant")
-    parser.add_argument("--autostart", "-a", help="HA自启动")
-    parser.add_argument("--samba", "-sa", help="samba安装与配置")
-    parser.add_argument("--chinese", "-c", help="中文及输入法安装")
-    parser.add_argument("--mosquitto", "-m", help="MQTT Broker安装")
+    parser.add_argument("-w", "--wifi", help="配置wifi信息")
+    parser.add_argument("-v", "--version", help="获取版本信心")
+    parser.add_argument("-s", "--source", help="更换apt,pip源")
+    parser.add_argument("-p", "--prepare", help="更新软件列表与软件")
+    parser.add_argument("-i", "--installHA", help="安装HomeAssistant")
+    parser.add_argument("-a", "--autostart", help="HA自启动")
+    parser.add_argument("-sa", "--samba", help="samba安装与配置")
+    parser.add_argument("-c", "--chinese", help="中文及输入法安装")
+    parser.add_argument("-m", "--mosquitto", help="MQTT Broker安装")
 
     args = parser.parse_args()
     args = vars(args)
+    print(args)
     if len(sys.argv) == 1:
         parser.print_help()
     service = Service()
