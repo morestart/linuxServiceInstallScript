@@ -52,7 +52,6 @@ class Service:
                             "\tpriority=1}")
                     Logger.info("conf wifi success")
             else:
-                self.LOGGER.warn(">>WARNING! SSID is None, Please Enter again...")
                 self.connect_wifi()
         else:
             self.LOGGER.warn("WARNING! SSID can not be None")
@@ -66,8 +65,11 @@ class Service:
 
     # 换源 更换清华源 pip同步时间 5min
     def change_source(self):
-        subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak")
-        subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak")
+        try:
+            subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak")
+            subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak")
+        except Exception:
+            Logger.error(Exception)
         with open(self.apt_source, 'w+') as f:
             f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
                     "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
