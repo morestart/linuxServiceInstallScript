@@ -95,10 +95,6 @@ class Service:
     def update_ha():
         subprocess.run("sudo pip3 install -U homeassistant", shell=True)
 
-    @staticmethod
-    def update_pip():
-        subprocess.run("pip install --upgrade pip", shell=True)
-
     # 安装HomeAssistant
     @staticmethod
     def install_ha():
@@ -153,11 +149,10 @@ class Install:
     parser.add_argument("-sa", "--samba", help="samba安装与配置")
     parser.add_argument("-c", "--chinese", help="中文及输入法安装")
     parser.add_argument("-m", "--mosquitto", help="MQTT Broker安装")
-    parser.add_argument("-up", "--updatePIP", help="更新pip")
 
     args = parser.parse_args()
     args = vars(args)
-    print(args)
+    # print(args)
     if len(sys.argv) == 1:
         parser.print_help()
     service = Service()
@@ -181,8 +176,6 @@ class Install:
         service.mosquitto()
     if args["updateHA"]:
         service.update_ha()
-    if args["updatePIP"]:
-        service.update_pip()
 
 
 if __name__ == '__main__':
