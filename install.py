@@ -90,6 +90,15 @@ class Service:
         subprocess.run("sudo apt-get update")
         subprocess.run("sudo apt-get upgrade")
 
+    # 更新HomeAssistant
+    @staticmethod
+    def update_ha():
+        subprocess.run("sudo pip3 install -U homeassistant", shell=True)
+
+    @staticmethod
+    def update_pip():
+        subprocess.run("pip install --upgrade pip", shell=True)
+
     # 安装HomeAssistant
     @staticmethod
     def install_ha():
@@ -139,10 +148,12 @@ class Install:
     parser.add_argument("-s", "--source", help="更换apt,pip源")
     parser.add_argument("-p", "--prepare", help="更新软件列表与软件")
     parser.add_argument("-i", "--installHA", help="安装HomeAssistant")
+    parser.add_argument("-u", "--updateHA", help="更新HA版本")
     parser.add_argument("-a", "--autostart", help="HA自启动")
     parser.add_argument("-sa", "--samba", help="samba安装与配置")
     parser.add_argument("-c", "--chinese", help="中文及输入法安装")
     parser.add_argument("-m", "--mosquitto", help="MQTT Broker安装")
+    parser.add_argument("-up", "--updatePIP", help="更新pip")
 
     args = parser.parse_args()
     args = vars(args)
@@ -168,6 +179,10 @@ class Install:
         service.install_font_pinyin()
     if args["mosquitto"]:
         service.mosquitto()
+    if args["updateHA"]:
+        service.update_ha()
+    if args["updatePIP"]:
+        service.update_pip()
 
 
 if __name__ == '__main__':
