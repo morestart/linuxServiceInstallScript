@@ -28,16 +28,15 @@ class Service:
         self.smb_conf_add = "/etc/samba/smb.conf"
         self.wifi_conf_add = "/etc/wpa_supplicant/wpa_supplicant.conf"
         self.ha_conf_add = None
-        self.LOGGER = Logger()
 
     # 配置wifi
     def connect_wifi(self):
-        self.LOGGER.info(">>>Add WIFI,Please Enter your SSID and PASSWORD")
+        Logger.info(">>>Add WIFI,Please Enter your SSID and PASSWORD")
         SSID = input("SSID>")
         PASSWORD = input("PASSWORD>")
 
         if SSID != "":
-            self.LOGGER.info(">>>Enter yes to confirm your WIFI infomation.(yes or no)")
+            Logger.info(">>>Enter yes to confirm your WIFI infomation.(yes or no)")
             confirm = input(">")
             if confirm == "YES" or not confirm != "yes":
                 with open(self.wifi_conf_add, "w+") as f:
@@ -53,7 +52,7 @@ class Service:
             else:
                 self.connect_wifi()
         else:
-            self.LOGGER.warn("WARNING! SSID can not be None")
+            Logger.warn("WARNING! SSID can not be None")
             self.connect_wifi()
 
     # 获取当前HA,Python版本
