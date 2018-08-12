@@ -27,7 +27,7 @@ class Service:
         self.auto_start_conf_add = "/etc/systemd/system/home-assistant@pi.service"
         self.smb_conf_add = "/etc/samba/smb.conf"
         self.wifi_conf_add = "/etc/wpa_supplicant/wpa_supplicant.conf"
-        self.ha_conf_add = None
+        # self.ha_conf_add = None
 
     # 配置wifi
     def connect_wifi(self):
@@ -66,21 +66,21 @@ class Service:
         try:
             subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak")
         except FileNotFoundError:
-            Logger.error("can't find pip conf file, we will set up it.")
+            Logger.error("can't find pip config file, we will set up it.")
         finally:
             with open(self.pip_source, 'w+') as f:
                 f.write("[global]\n"
                         "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
-                Logger.info("write pip conf file success")
+                Logger.info("write pip config file success")
         try:
             subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak")
         except FileNotFoundError:
-            Logger.error("can't find apt conf file, we will set up it.")
+            Logger.error("can't find apt config file, we will set up it.")
         finally:
             with open(self.apt_source, 'w+') as f:
                 f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
                         "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
-                Logger.info("write apt source conf file success")
+                Logger.info("write apt source config file success")
 
     # 更新源与软件
     @staticmethod
