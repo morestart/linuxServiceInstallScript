@@ -91,12 +91,12 @@ class Service:
     # 更新HomeAssistant
     @staticmethod
     def update_ha():
-        subprocess.run("sudo apt-get install libzbar-dev libzbar0", shell=True)
         subprocess.run("sudo pip3 install -U homeassistant", shell=True)
 
     # 安装HomeAssistant
     @staticmethod
     def install_ha():
+        subprocess.run("sudo apt-get install libzbar-dev libzbar0", shell=True)
         subprocess.run("sudo pip3 install homeassistant", shell=True)
 
     # HA 自启动
