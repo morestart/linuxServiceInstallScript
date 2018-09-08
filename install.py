@@ -48,7 +48,7 @@ class Service:
                             "\tpsk=\"" + PASSWORD + "\"\n" +
                             "\tkey_mgmt=WPA-PSK\n"
                             "\tpriority=1}")
-                    Logger.info("conf wifi success")
+                    Logger.info("config wifi success")
             else:
                 self.connect_wifi()
         else:
@@ -91,6 +91,7 @@ class Service:
     # 更新HomeAssistant
     @staticmethod
     def update_ha():
+        subprocess.run("sudo apt-get install libzbar-dev libzbar0", shell=True)
         subprocess.run("sudo pip3 install -U homeassistant", shell=True)
 
     # 安装HomeAssistant
@@ -158,7 +159,7 @@ class Service:
 class Install:
     import argparse
     import sys
-    parser = argparse.ArgumentParser(description="HomeAssistant Install Script")
+    parser = argparse.ArgumentParser(description="Raspbian Install Script")
     parser.add_argument("-w", "--wifi", default=False, help="配置wifi信息")
     parser.add_argument("-s", "--source", default=False, help="更换apt,pip源")
     parser.add_argument("-p", "--prepare", default=False, help="更新软件列表与软件")
@@ -176,6 +177,7 @@ class Install:
     if len(sys.argv) == 1:
         parser.print_help()
     service = Service()
+
     if args["wifi"]:
         service.connect_wifi()
     if args["version"]:
