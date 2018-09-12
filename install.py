@@ -64,7 +64,7 @@ class Service:
     # 换源 更换清华源 pip同步时间 5min
     def change_source(self):
         try:
-            subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak")
+            subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak", shell=True)
         except FileNotFoundError:
             Logger.error("can't find pip config file, we will set up it.")
         finally:
@@ -73,7 +73,7 @@ class Service:
                         "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
                 Logger.info("write pip config file success")
         try:
-            subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak")
+            subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak", shell=True)
         except FileNotFoundError:
             Logger.error("can't find apt config file, we will set up it.")
         finally:
@@ -96,7 +96,7 @@ class Service:
     # 安装HomeAssistant
     @staticmethod
     def install_ha():
-        subprocess.run("sudo apt-get install libzbar-dev libzbar0", shell=True)
+        # subprocess.run("sudo apt-get install libzbar-dev libzbar0", shell=True)
         subprocess.run("sudo pip3 install homeassistant", shell=True)
 
     # HA 自启动
@@ -154,6 +154,16 @@ class Service:
     def mosquitto():
         subprocess.run("sudo apt-get install mosquitto", shell=True)
         subprocess.run("sudo systemctl start mosquitto.service", shell=True)
+
+    # 重启HA
+    @staticmethod
+    def restart_ha():
+        subprocess.run("sudo systemctl restart home-assistant@pi", shell=True)
+
+    # 查看log
+    @staticmethod
+    def print_log():
+        subprocess.run("sudo journalctl -f -u home-assistant@pi", shell=True)
 
 
 class Install:
