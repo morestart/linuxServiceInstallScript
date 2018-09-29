@@ -1,9 +1,8 @@
 # HomeAssistant Service Install Script for Raspberry Pi
 
 ## 使用说明
-将此文件放入任意路径下,使用sudo执行
-
-或使用`sudo nano install.py`然后将内容复制进去
+执行以下命令
+`curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
 ## 参数说明
 - `-w`添加wifi配置
 - `-v` 查看版本号

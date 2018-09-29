@@ -96,7 +96,10 @@ class Service:
     # 安装HomeAssistant
     @staticmethod
     def install_ha():
-        # subprocess.run("sudo apt-get install libzbar-dev libzbar0", shell=True)
+        # 处理 https 又依赖加解密算法（即 cryptography 包），而 cryptography 又依赖傅立叶变换的算法以及相应的编译环境
+        subprocess.run("sudo apt-get install libzbar-dev libzbar0", shell=True)
+        subprocess.run("sudo apt-get install libssl-dev libffi-dev python-dev "
+                       "build-essential libxml2-dev libxslt1-dev", shell=True)
         subprocess.run("sudo pip3 install homeassistant", shell=True)
 
     # HA 自启动
