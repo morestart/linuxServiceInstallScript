@@ -2,6 +2,7 @@
 
 ## 使用说明
 执行以下命令
+
 `curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
 ## 参数说明
 - `-w`添加wifi配置
