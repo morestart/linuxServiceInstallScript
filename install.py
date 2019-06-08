@@ -1,4 +1,5 @@
 import subprocess
+import sys, getopt
 
 
 class Logger:
@@ -164,49 +165,64 @@ class Service:
     def print_log():
         subprocess.run("sudo journalctl -f -u home-assistant@pi", shell=True)
 
+    @staticmethod
+    def upgrade_python():
+        subprocess.run("sudo aptitude install build-essential tk-dev libncurses5-dev "
+                       "libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev "
+                       "libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libudev-dev")
+        subprocess.run("cd /data")
+        subprocess.run("wget https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz")
+        subprocess.run("sudo tar -zxvf Python-3.6.5.tgz")
+        subprocess.run("cd Python-3.6.5")
+        subprocess.run('sudo ./configure --enable-optimizations')
+        subprocess.run("sudo apt-get install libtcmalloc-minimal4")
+        subprocess.run("export LD_PRELOAD=\"/usr/lib/libtcmalloc_minimal.so.4\"")
+        subprocess.run("make -j4")
+        subprocess.run("sudo make install")
 
-class Install:
-    import argparse
-    import sys
-    parser = argparse.ArgumentParser(description="Raspbian Install Script")
-    parser.add_argument("-w", "--wifi", default=False, help="配置wifi信息")
-    parser.add_argument("-s", "--source", default=False, help="更换apt,pip源")
-    parser.add_argument("-p", "--prepare", default=False, help="更新软件列表与软件")
-    parser.add_argument("-i", "--installHA", default=False, help="安装HomeAssistant")
-    parser.add_argument("-v", "--version", default=False, help="获取版本信息")
-    parser.add_argument("-u", "--updateHA", default=False, help="更新HA版本及其依赖")
-    parser.add_argument("-a", "--autostart", default=False, help="HA自启动")
-    parser.add_argument("-c", "--chinese", default=False, help="中文及输入法安装")
-    parser.add_argument("-m", "--mosquitto", default=False, help="MQTT Broker安装")
-    parser.add_argument("-sa", "--samba", default=False, help="samba安装与配置")
 
-    args = parser.parse_args()
-    args = vars(args)
-    # print(args)
-    if len(sys.argv) == 1:
-        parser.print_help()
-    service = Service()
-
-    if args["wifi"]:
-        service.connect_wifi()
-    if args["version"]:
-        service.get_version()
-    if args["source"]:
-        service.change_source()
-    if args["prepare"]:
-        service.prepare()
-    if args["installHA"]:
-        service.install_ha()
-    if args["autostart"]:
-        service.ha_auto_start()
-    if args["samba"]:
-        service.samba()
-    if args["chinese"]:
-        service.install_font_pinyin()
-    if args["mosquitto"]:
-        service.mosquitto()
-    if args["updateHA"]:
-        service.update_ha()
+# class Install:
+    # import argparse
+    # import sys
+    # parser = argparse.ArgumentParser(description="Raspbian Install Script")
+    # parser.add_argument("-w", "--wifi", default=False, help="配置wifi信息")
+    # parser.add_argument("-s", "--source", default=False, help="更换apt,pip源")
+    # parser.add_argument("-p", "--prepare", default=False, help="更新软件列表与软件")
+    # parser.add_argument("-i", "--installHA", default=False, help="安装HomeAssistant")
+    # parser.add_argument("-v", "--version", default=False, help="获取版本信息")
+    # parser.add_argument("-u", "--updateHA", default=False, help="更新HA版本及其依赖")
+    # parser.add_argument("-a", "--autostart", default=False, help="HA自启动")
+    # parser.add_argument("-c", "--chinese", default=False, help="中文及输入法安装")
+    # parser.add_argument("-m", "--mosquitto", default=False, help="MQTT Broker安装")
+    # parser.add_argument("-sa", "--samba", default=False, help="samba安装与配置")
+    #
+    # args = parser.parse_args()
+    # args = vars(args)
+    # # print(args)
+    # if len(sys.argv) == 1:
+    #     parser.print_help()
+    # service = Service()
+    #
+    # if args["wifi"]:
+    #     service.connect_wifi()
+    # if args["version"]:
+    #     service.get_version()
+    # if args["source"]:
+    #     service.change_source()
+    # if args["prepare"]:
+    #     service.prepare()
+    # if args["installHA"]:
+    #     service.install_ha()
+    # if args["autostart"]:
+    #     service.ha_auto_start()
+    # if args["samba"]:
+    #     service.samba()
+    # if args["chinese"]:
+    #     service.install_font_pinyin()
+    # if args["mosquitto"]:
+    #     service.mosquitto()
+    # if args["updateHA"]:
+    #     service.update_ha()
 
 
 if __name__ == '__main__':
