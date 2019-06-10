@@ -267,6 +267,7 @@ class Service:
                     time.sleep(1)
                     subprocess.run("sudo mv /usr/bin/python /usr/bin/python3.4.2", shell=True)
                     subprocess.run("ln -s /usr/local/python37/bin/python37 /usr/bin/python", shell=True)
+        Logger.info("\n")
         self.get_python_version()
 
 
