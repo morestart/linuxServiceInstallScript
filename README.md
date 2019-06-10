@@ -1,4 +1,4 @@
-# HomeAssistant Service Install Script for Raspberry Pi
+# Raspberry Pi Service Install Script
 
 ## 使用说明
 执行以下命令下载程序
