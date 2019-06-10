@@ -3,7 +3,7 @@
 ## 使用说明
 执行以下命令下载程序
 
-`curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
+`sudo curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
 ## 参数说明
 - `-w` 添加wifi配置
 - `-p` 更新软件包列表与软件
