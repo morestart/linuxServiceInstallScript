@@ -60,25 +60,15 @@ class Service:
     # 获取当前Python版本
     @staticmethod
     def get_python_version():
-        try:
-            subprocess.run("python3 -V", shell=True)
-        except Exception as e:
-            Logger.error(e)
-            Logger.error(">>>没有安装Python")
-            time.sleep(1)
+        subprocess.run("python3 -V", shell=True)
 
     # 获取当前HA版本
     @staticmethod
     def get_ha_version():
-        try:
-            subprocess.run("hass --version", shell=True)
-        except Exception as e:
-            Logger.error(e)
-            Logger.error(">>>没有安装HomeAssistant")
-            time.sleep(1)
+        subprocess.run("hass --version", shell=True)
 
     # 换源 更换清华源 pip同步时间 5min
-    def change_source(self):
+    def change_pip_source(self):
         try:
             subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak", shell=True)
         except FileNotFoundError:
@@ -90,6 +80,8 @@ class Service:
                         "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
                 Logger.info(">>>写入pip文件成功")
                 time.sleep(1)
+
+    def change_apt_source(self):
         try:
             subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak", shell=True)
         except FileNotFoundError:
@@ -101,6 +93,7 @@ class Service:
                         "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
                 Logger.info(">>>写入apt文件成功")
                 time.sleep(1)
+        self.prepare()
 
     # 更新源与软件
     @staticmethod
@@ -247,7 +240,7 @@ class Service:
 
 
 class Install:
-    opts, args = getopt.getopt(sys.argv[1:], "-w-p-s", ["help", "pv", "hv", "cs", "uh",
+    opts, args = getopt.getopt(sys.argv[1:], "-w-p-s", ["help", "pv", "hv", "cps", "cas", "uh",
                                                         "ih", "has", "ifp", "im", "rh", "phl", "up", "ush"])
     service = Service()
     for opt, value in opts:
@@ -261,8 +254,10 @@ class Install:
             service.get_python_version()
         elif opt == "--hv":
             service.get_ha_version()
-        elif opt == "--cs":
-            service.change_source()
+        elif opt == "--cps":
+            service.change_pip_source()
+        elif opt == "--cas":
+            service.change_apt_source()
         elif opt == "--uh":
             service.upgrade_ha()
         elif opt == "--usp":

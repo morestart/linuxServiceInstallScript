@@ -1,16 +1,17 @@
 # HomeAssistant Service Install Script for Raspberry Pi
 
 ## 使用说明
-执行以下命令
+执行以下命令下载程序
 
 `curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
 ## 参数说明
 - `-w` 添加wifi配置
 - `-p` 更新软件包列表与软件
-- `-s` 安装sanba服务
+- `-s` 安装samba服务
 - `--pv` 获取当前Python版本
 - `--hv` 获取当前HA版本
-- `--cs` 更改pip与apt源
+- `--cps` 更改pip源
+- `--cas` 更改apt源
 - `--uh` 更新HA
 - `--usp` 安装特定版本的HA
 - `--ih` 安装最新版HA
