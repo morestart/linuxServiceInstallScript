@@ -173,10 +173,7 @@ class Service:
         # subprocess.run("wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz", shell=True)
         subprocess.run("sudo tar -zvxf Python-3.7.2.tgz", shell=True)
         os.chdir("/home/pi/Python-3.7.2")
-        subprocess.run('mkdir /usr/local/python3.7', shell=True)
-        subprocess.run("sudo apt-get install libtcmalloc-minimal4", shell=True)
-        subprocess.run("sudo apt-get install gcc", shell=True)
-        subprocess.run("sudo ./configure --prefix=/usr/local/python37 &&make &&make install", shell=True)
+        subprocess.run("sudo ./configure && sudo make && sudo make install", shell=True)
         subprocess.run("ln -s /usr/local/python37/bin/python37 /usr/bin/python", shell=True)
 
 
