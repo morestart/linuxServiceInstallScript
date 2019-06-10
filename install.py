@@ -167,18 +167,16 @@ class Service:
 
     @staticmethod
     def upgrade_python():
-        subprocess.run("sudo aptitude install build-essential tk-dev libncurses5-dev "
-                       "libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev "
-                       "libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libudev-dev")
-        subprocess.run("cd /data")
-        subprocess.run("wget https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz")
-        subprocess.run("sudo tar -zxvf Python-3.6.5.tgz")
-        subprocess.run("cd Python-3.6.5")
-        subprocess.run('sudo ./configure --enable-optimizations')
-        subprocess.run("sudo apt-get install libtcmalloc-minimal4")
-        subprocess.run("export LD_PRELOAD=\"/usr/lib/libtcmalloc_minimal.so.4\"")
-        subprocess.run("make -j4")
-        subprocess.run("sudo make install")
+        subprocess.run("sudo apt-get install wget", shell=True)
+        subprocess.run("wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz", shell=True)
+        subprocess.run("sudo tar -zvxf Python-3.7.2.tgz", shell=True)
+        subprocess.run("cd Python-3.7.2", shell=True)
+        subprocess.run('mkdir /usr/local/python3.7', shell=True)
+        subprocess.run("sudo apt-get install libtcmalloc-minimal4", shell=True)
+        subprocess.run("sudo apt-get install gcc", shell=True)
+        subprocess.run("./configure --prefix=/usr/local/python37 &&make &&make install", shell=True)
+        subprocess.run("ln -s /usr/local/python37/bin/python37 /usr/bin/python", shell=True)
+
 
 
 # class Install:
@@ -226,4 +224,4 @@ class Service:
 
 
 if __name__ == '__main__':
-    Install()
+    Service.upgrade_python()
