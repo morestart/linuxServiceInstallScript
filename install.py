@@ -271,7 +271,7 @@ class Install:
             service.install_ha()
         elif opt == "--has":
             service.ha_auto_start()
-        elif opt == "-ifp":
+        elif opt == "--ifp":
             service.install_font_pinyin()
         elif opt == "--im":
             service.install_mosquitto()

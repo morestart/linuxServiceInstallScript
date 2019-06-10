@@ -5,20 +5,22 @@
 
 `curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
 ## 参数说明
-- `-w`添加wifi配置
-- `-v` 查看版本号
-- `-s` 更换pip apt源
-- `-p` 更新软件源与软件
-- `-i` 安装HomeAssistant
-- `-a` 添加自启动
-- `-sa` 安装并配置samba
-- `-c` 中文配置
-- `-m` MQTT Broker安装
-- `-u` 更新HomeAssistant版本及其依赖
+- `-w` 添加wifi配置
+- `-p` 更新软件包列表与软件
+- `-s` 安装sanba服务
+- `--pv` 获取当前Python版本
+- `--hv` 获取当前HA版本
+- `--cs` 更改pip与apt源
+- `--uh` 更新HA
+- `--usp` 安装特定版本的HA
+- `--ih` 安装最新版HA
+- `--has` 配置ha自启动
+- `--ifp` 安装中文字体与拼音
+- `--im` 安装配置mosquitto
+- `--rh` 重启HA
+- `--phl` 打印HA log
+- `--up` 更新Python版本为3.7.2
 
 
 ## 示例
-
-`sudo python3 install.py -w true -s true`
-
-`sudo python3 install.py -w True -s True`
+`sudo python3 install.py -w --ih 0.94.0 --phl`
