@@ -167,11 +167,12 @@ class Service:
 
     @staticmethod
     def upgrade_python():
+        import os
         subprocess.run("sudo apt-get install build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev", shell=True)
         subprocess.run("sudo apt-get install wget", shell=True)
         # subprocess.run("wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz", shell=True)
         subprocess.run("sudo tar -zvxf Python-3.7.2.tgz", shell=True)
-        subprocess.run("cd Python-3.7.2", shell=True)
+        os.chdir("/home/pi/Python-3.7.2")
         subprocess.run('mkdir /usr/local/python3.7', shell=True)
         subprocess.run("sudo apt-get install libtcmalloc-minimal4", shell=True)
         subprocess.run("sudo apt-get install gcc", shell=True)
