@@ -128,7 +128,7 @@ class Service:
     def upgrade_ha(self):
         code = subprocess.run("sudo pip3 install -U homeassistant", shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] g更新HomeAssistant失败,请检查网络, 两秒后准备重新安装...")
+            Logger.error("[ERROR] 更新HomeAssistant失败,请检查网络, 两秒后准备重新安装...")
             time.sleep(2)
             self.upgrade_ha()
 
@@ -267,6 +267,7 @@ class Service:
                     time.sleep(1)
                     subprocess.run("sudo mv /usr/bin/python /usr/bin/python3.4.2", shell=True)
                     subprocess.run("ln -s /usr/local/python37/bin/python37 /usr/bin/python", shell=True)
+        self.get_python_version()
 
 
 class Install:
