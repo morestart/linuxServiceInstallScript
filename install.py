@@ -209,18 +209,20 @@ class Service:
             Logger.error("[ERROR] 安装mosquitto失败,请检查网络连接,两秒后准备重新安装")
             time.sleep(2)
             self.install_mosquitto()
-        try:
-            with open(self.mosquitto_config_path, "w+") as f:
-                f.write("allow_anonymous false\n"
-                        "password_file /etc/mosquitto/pwfile\n"
-                        "listener 1883\n")
-                Logger.info("[INFO] 写入MQTT配置成功!")
-        except Exception as e:
-            Logger.error(e)
-            Logger.error("[ERROR] 找不到MQTT配置,请检查路径.")
-        mqtt_user_name = input("请输入MQTT用户名\n>")
-        subprocess.run("sudo mosquitto_passwd -c /etc/mosquitto/pwfile {}".format(mqtt_user_name), shell=True)
-        subprocess.run("sudo systemctl start mosquitto.service", shell=True)
+        elif code.returncode == 0:
+            try:
+                with open(self.mosquitto_config_path, "w+") as f:
+                    f.write("allow_anonymous false\n"
+                            "password_file /etc/mosquitto/pwfile\n"
+                            "listener 1883\n")
+                    Logger.info("[INFO] 写入MQTT配置成功!")
+            except Exception as e:
+                Logger.error(e)
+                Logger.error("[ERROR] 找不到MQTT配置,请检查路径.")
+
+            mqtt_user_name = input("请输入MQTT用户名:")
+            subprocess.run("sudo mosquitto_passwd -c /etc/mosquitto/pwfile {}".format(mqtt_user_name), shell=True)
+            subprocess.run("sudo systemctl start mosquitto.service", shell=True)
 
     # 重启HA
     @staticmethod
