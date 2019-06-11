@@ -136,7 +136,7 @@ class Service:
     def upgrade_specific_ha(self):
         Logger.info("[INFO] 请输入HA版本号")
         ha_version = input(">")
-        code = subprocess.run("sudo pip3 install -U homeassistant={}".format(ha_version), shell=True)
+        code = subprocess.run("sudo pip3 install -U homeassistant=={}".format(ha_version), shell=True)
         if code.returncode != 0:
             Logger.error("[ERROR] 安装{}版本HomeAssistant失败,请检查版本号与网络连接,两秒后准备重新安装...".format(ha_version))
             time.sleep(2)
@@ -154,7 +154,7 @@ class Service:
         elif code.returncode == 0:
             self.ha_auto_start()
 
-    # HA 自启动 TODO
+    # HA 自启动
     def ha_auto_start(self):
         try:
             with open(self.auto_start_conf_add, "w+") as f:
@@ -268,7 +268,7 @@ class Service:
                     Logger.info("[INFO] 建立链接")
                     time.sleep(1)
                     subprocess.run("sudo mv /usr/bin/python /usr/bin/python3.4.2", shell=True)
-                    subprocess.run("ln -s /usr/local/python37/bin/python37 /usr/bin/python", shell=True)
+                    subprocess.run("sudo ln -s /usr/local/python37/bin/python37 /usr/bin/python", shell=True)
         Logger.info("\n")
         self.get_python_version()
 
