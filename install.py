@@ -167,7 +167,7 @@ class Service:
                         "User=%i\n"
                         "ExecStart=/usr/local/bin/hass\n\n"
                         "[Install]\n"
-                        "WantedBy=multi-user.target")
+                        "WantedBy=multi-user.target\n")
             Logger.info("[INFO] HomeAssistant自启动建立成功")
         except Exception as e:
             Logger.error(e)
@@ -327,6 +327,8 @@ class Install:
             service.print_ha_log()
         elif opt == "--up":
             service.upgrade_python()
+        else:
+            Logger.error("[ERROR] 没有这个选项, 请重新输入...")
 
 
 if __name__ == '__main__':
