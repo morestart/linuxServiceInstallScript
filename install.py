@@ -333,4 +333,7 @@ class Install:
 
 
 if __name__ == '__main__':
-    Install()
+    try:
+        Install()
+    except PermissionError:
+        Logger.error("[ERROR] 没有权限,请使用sudo运行此程序")
