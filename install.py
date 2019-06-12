@@ -169,8 +169,7 @@ class Service:
                         "[Install]\n"
                         "WantedBy=multi-user.target\n")
             Logger.info("[INFO] HomeAssistant自启动建立成功")
-        except Exception as e:
-            Logger.error(e)
+        except FileNotFoundError:
             Logger.error("[ERROR] 自启动建立失败,请检查自启动配置路径.")
 
     # samba安装 TODO
@@ -217,8 +216,7 @@ class Service:
                             "password_file /etc/mosquitto/pwfile\n"
                             "listener 1883\n")
                     Logger.info("[INFO] 写入MQTT配置成功!")
-            except Exception as e:
-                Logger.error(e)
+            except FileNotFoundError:
                 Logger.error("[ERROR] 找不到MQTT配置,请检查路径.")
 
             mqtt_user_name = input("请输入MQTT用户名:")
@@ -276,59 +274,62 @@ class Service:
 
 
 class Install:
-    opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
-                                                          "rh", "phl", "up", "ush"])
-    service = Service()
-    for opt, value in opts:
-        if opt == "-h" or opt == "--help":
-            Logger.info("-w 添加wifi配置")
-            Logger.info("-p 更新软件包列表与软件")
-            Logger.info("-s 安装samba服务")
-            Logger.info("-h 显示帮助")
-            Logger.info("--help 显示帮助")
-            Logger.info("--pv 查看Python3版本")
-            Logger.info("--hv 查看HomeAssistant版本")
-            Logger.info("--cps 更换pip源")
-            Logger.info("--cas 更换apt源")
-            Logger.info("--uh 更新HomeAssistant")
-            Logger.info("--ih 安装HomeAssistant")
-            Logger.info("--has 配置HomeAssistant自启动")
-            Logger.info("--im 安装mosquitto服务器")
-            Logger.info("--rh 重启HomeAssistant")
-            Logger.info("--phl 查看HomeAssistant日志")
-            Logger.info("--up 更新Python3版本")
-        elif opt == "-w":
-            service.set_wifi()
-        elif opt == "-p":
-            service.prepare()
-        elif opt == "-s":
-            service.install_samba()
-        elif opt == "--pv":
-            service.get_python_version()
-        elif opt == "--hv":
-            service.get_ha_version()
-        elif opt == "--cps":
-            service.change_pip_source()
-        elif opt == "--cas":
-            service.change_apt_source()
-        elif opt == "--uh":
-            service.upgrade_ha()
-        elif opt == "--usp":
-            service.upgrade_specific_ha()
-        elif opt == "--ih":
-            service.install_ha()
-        elif opt == "--has":
-            service.ha_auto_start()
-        elif opt == "--im":
-            service.install_mosquitto()
-        elif opt == "--rh":
-            service.restart_ha()
-        elif opt == "--phl":
-            service.print_ha_log()
-        elif opt == "--up":
-            service.upgrade_python()
-        else:
-            Logger.error("[ERROR] 没有这个选项, 请重新输入...")
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
+                                                              "rh", "phl", "up", "ush"])
+        service = Service()
+        for opt, value in opts:
+            if opt == "-h" or opt == "--help":
+                Logger.info("-w 添加wifi配置")
+                Logger.info("-p 更新软件包列表与软件")
+                Logger.info("-s 安装samba服务")
+                Logger.info("-h 显示帮助")
+                Logger.info("--help 显示帮助")
+                Logger.info("--pv 查看Python3版本")
+                Logger.info("--hv 查看HomeAssistant版本")
+                Logger.info("--cps 更换pip源")
+                Logger.info("--cas 更换apt源")
+                Logger.info("--uh 更新HomeAssistant")
+                Logger.info("--ih 安装HomeAssistant")
+                Logger.info("--has 配置HomeAssistant自启动")
+                Logger.info("--im 安装mosquitto服务器")
+                Logger.info("--rh 重启HomeAssistant")
+                Logger.info("--phl 查看HomeAssistant日志")
+                Logger.info("--up 更新Python3版本")
+            elif opt == "-w":
+                service.set_wifi()
+            elif opt == "-p":
+                service.prepare()
+            elif opt == "-s":
+                service.install_samba()
+            elif opt == "--pv":
+                service.get_python_version()
+            elif opt == "--hv":
+                service.get_ha_version()
+            elif opt == "--cps":
+                service.change_pip_source()
+            elif opt == "--cas":
+                service.change_apt_source()
+            elif opt == "--uh":
+                service.upgrade_ha()
+            elif opt == "--usp":
+                service.upgrade_specific_ha()
+            elif opt == "--ih":
+                service.install_ha()
+            elif opt == "--has":
+                service.ha_auto_start()
+            elif opt == "--im":
+                service.install_mosquitto()
+            elif opt == "--rh":
+                service.restart_ha()
+            elif opt == "--phl":
+                service.print_ha_log()
+            elif opt == "--up":
+                service.upgrade_python()
+            else:
+                Logger.error("[ERROR] 没有这个选项, 请重新输入...")
+    except getopt.GetoptError:
+        Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
 
 
 if __name__ == '__main__':
