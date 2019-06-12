@@ -1,6 +1,7 @@
+import getopt
 import subprocess
+import sys
 import time
-import sys, getopt
 
 
 class Logger:
@@ -238,7 +239,8 @@ class Service:
         import os
         Logger.info("[INFO] 开始安装依赖")
         time.sleep(2)
-        code = subprocess.run("sudo apt-get install build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev", shell=True)
+        code = subprocess.run("sudo apt-get install build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev",
+                              shell=True)
         if code.returncode != 0:
             Logger.error("[ERROR] 安装依赖失败,请检查网络连接,两秒后准备重新安装")
             time.sleep(2)
@@ -274,11 +276,28 @@ class Service:
 
 
 class Install:
-    opts, args = getopt.getopt(sys.argv[1:], "-w-p-s", ["help", "pv", "hv", "cps", "cas", "uh",
-                                                        "ih", "has", "im", "rh", "phl", "up", "ush"])
+    opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
+                                                          "rh", "phl", "up", "ush"])
     service = Service()
     for opt, value in opts:
-        if opt == "-w":
+        if opt == "-h" or opt == "--help":
+            Logger.info("-w 添加wifi配置")
+            Logger.info("-p 更新软件包列表与软件")
+            Logger.info("-s 安装samba服务")
+            Logger.info("-h 显示帮助")
+            Logger.info("--help 显示帮助")
+            Logger.info("--pv 查看Python3版本")
+            Logger.info("--hv 查看HomeAssistant版本")
+            Logger.info("--cps 更换pip源")
+            Logger.info("--cas 更换apt源")
+            Logger.info("--uh 更新HomeAssistant")
+            Logger.info("--ih 安装HomeAssistant")
+            Logger.info("--has 配置HomeAssistant自启动")
+            Logger.info("--im 安装mosquitto服务器")
+            Logger.info("--rh 重启HomeAssistant")
+            Logger.info("--phl 查看HomeAssistant日志")
+            Logger.info("--up 更新Python3版本")
+        elif opt == "-w":
             service.set_wifi()
         elif opt == "-p":
             service.prepare()
