@@ -277,6 +277,7 @@ class Service:
                     Logger.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
                     time.sleep(2)
                     self.prepare()
+                    self.upgrade_python()
                 elif code.returncode == 0:
                     Logger.info("[INFO] 开始解压安装包")
                     time.sleep(1)
@@ -347,6 +348,10 @@ class Install:
                 service.print_ha_log()
             elif opt == "--up":
                 service.upgrade_python()
+            elif opt == "--sh":
+                service.start_ha()
+            elif opt == "--sth":
+                service.stop_ha()
     except getopt.GetoptError:
         Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
 
