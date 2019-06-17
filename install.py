@@ -257,6 +257,7 @@ class Service:
 
     def upgrade_python(self):
         import os
+        subprocess.run("sudo pip3 uninstall homeassistant", shell=True)
         Logger.info("[INFO] 开始安装依赖")
         time.sleep(2)
         code = subprocess.run("sudo apt-get install build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev",
