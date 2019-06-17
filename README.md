@@ -28,7 +28,9 @@
 
 ## 示例
 以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
+
 `sudo python3 install.py -w --ih 0.94.0 --phl`
 
 升级Python3版本
+
 `sudo python3 install.py --up`
