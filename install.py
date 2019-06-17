@@ -286,7 +286,7 @@ class Service:
                     Logger.info("[INFO] 开始编译Python")
                     time.sleep(2)
                     subprocess.run("sudo ./configure && sudo make && sudo make install", shell=True)
-                    Logger.info("[INFO] 已完成Python3.7安装")
+                    Logger.info("[INFO] 已完成Python3.7.2安装")
         Logger.info("\n")
         self.get_python_version()
 
