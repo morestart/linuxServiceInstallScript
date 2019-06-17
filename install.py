@@ -2,34 +2,7 @@ import getopt
 import subprocess
 import sys
 import time
-
-
-class Logger:
-    OKBLUE = '\033[94m'
-    WARNING = '\033[93m'
-    FAIL = '\033[31m'
-    ENDC = '\033[0m'
-
-    @staticmethod
-    def info(info):
-        try:
-            print(Logger.OKBLUE + info + Logger.ENDC)
-        except UnicodeEncodeError:
-            print("[ERROR] 请设置中文字体再运行此程序")
-
-    @staticmethod
-    def warn(info):
-        try:
-            print(Logger.WARNING + info + Logger.ENDC)
-        except UnicodeEncodeError:
-            print("[ERROR] 请设置中文字体再运行此程序")
-
-    @staticmethod
-    def error(info):
-        try:
-            print(Logger.FAIL + info + Logger.ENDC)
-        except UnicodeEncodeError:
-            print("[ERROR] 请设置中文字体再运行此程序")
+import logging
 
 
 class Service:
@@ -43,12 +16,12 @@ class Service:
 
     # 配置wifi
     def set_wifi(self):
-        Logger.info("[INFO] 增加wifi配置,请输入你的用户名和密码...")
+        logging.info("[INFO] 增加wifi配置,请输入你的用户名和密码...")
         SSID = input("SSID>")
         PASSWORD = input("PASSWORD>")
 
         if SSID != "":
-            Logger.info(">>>确认你的wifi配置.(y or n)")
+            logging.info(">>>确认你的wifi配置.(y or n)")
             confirm = input(">")
             if confirm == "y" or confirm == "Y":
                 with open(self.wifi_conf_path, "w+") as f:
@@ -60,11 +33,11 @@ class Service:
                             "\tpsk=\"" + PASSWORD + "\"\n" +
                             "\tkey_mgmt=WPA-PSK\n"
                             "\tpriority=1}")
-                    Logger.info("[INFO] 配置成功!")
+                    logging.info("[INFO] 配置成功!")
             elif confirm == "n" or confirm == "N":
                 self.set_wifi()
         else:
-            Logger.warn("[WARNING] SSID不能为空")
+            logging.warn("[WARNING] SSID不能为空")
             self.set_wifi()
 
     # 获取当前Python版本
@@ -72,65 +45,65 @@ class Service:
     def get_python_version():
         code = subprocess.run("python3 -V", shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 未安装Python3")
+            logging.error("[ERROR] 未安装Python3")
 
     # 获取当前HA版本
     @staticmethod
     def get_ha_version():
         code = subprocess.run("hass --version", shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 未安装HomeAssistant")
+            logging.error("[ERROR] 未安装HomeAssistant")
 
     # 换源 更换清华源 pip同步时间 5min
     def change_pip_source(self):
         code = subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak", shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 没有找到pip文件,准备建立pip文件")
+            logging.error("[ERROR] 没有找到pip文件,准备建立pip文件")
             time.sleep(2)
             with open(self.pip_source_path, 'w+') as f:
                 f.write("[global]\n"
                         "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
-                Logger.info("[INFO] 写入pip文件成功")
+                logging.info("[INFO] 写入pip文件成功")
         elif code.returncode == 0:
             with open(self.pip_source_path, 'w+') as f:
                 f.write("[global]\n"
                         "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
-                Logger.info("[INFO] 写入pip文件成功")
+                logging.info("[INFO] 写入pip文件成功")
 
     def change_apt_source(self):
         code = subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak", shell=True)
         if code.returncode != 0:
-            Logger.error("[INFO] 找不到apt文件,准备建立apt文件")
+            logging.error("[INFO] 找不到apt文件,准备建立apt文件")
             time.sleep(2)
             with open(self.apt_source_path, 'w+') as f:
                 f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
                         "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
-                Logger.info("[INFO] 写入apt文件成功")
+                logging.info("[INFO] 写入apt文件成功")
         elif code.returncode == 0:
             with open(self.apt_source_path, 'w+') as f:
                 f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
                         "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
-                Logger.info("[INFO] 写入apt文件成功")
+                logging.info("[INFO] 写入apt文件成功")
         self.prepare()
 
     # 更新源与软件
     def prepare(self):
         code = subprocess.run("sudo apt-get update", shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 更新软件包列表失败,请检查网络连接,两秒后准备重新更新")
+            logging.error("[ERROR] 更新软件包列表失败,请检查网络连接,两秒后准备重新更新")
             time.sleep(2)
             self.prepare()
         elif code.returncode == 0:
-            Logger.info("[INFO] 软件包列表更新完毕")
-            Logger.info("\n")
-            Logger.info("[INFO] 是否更新软件?(y or n)")
+            logging.info("[INFO] 软件包列表更新完毕")
+            logging.info("\n")
+            logging.info("[INFO] 是否更新软件?(y or n)")
             confirm = input(">")
             if confirm == "y" or confirm == "Y":
                 code = subprocess.run("sudo apt-get upgrade", shell=True)
                 if code.returncode != 0:
-                    Logger.error("[ERROR] 更新软件失败,请检查网络连接")
+                    logging.error("[ERROR] 更新软件失败,请检查网络连接")
                 else:
-                    Logger.info("[INFO] 更新软件完毕")
+                    logging.info("[INFO] 更新软件完毕")
             elif confirm == "n" or confirm == "N":
                 pass
 
@@ -138,27 +111,27 @@ class Service:
     def upgrade_ha(self):
         code = subprocess.run("sudo pip3 install -U homeassistant", shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 更新HomeAssistant失败,请检查网络, 两秒后准备重新安装...")
+            logging.error("[ERROR] 更新HomeAssistant失败,请检查网络, 两秒后准备重新安装...")
             time.sleep(2)
             self.upgrade_ha()
 
     # 更新指定版本HA
     def upgrade_specific_ha(self):
-        Logger.info("[INFO] 请输入HA版本号")
+        logging.info("[INFO] 请输入HA版本号")
         ha_version = input(">")
         code = subprocess.run("sudo pip3 install -U homeassistant=={}".format(ha_version), shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 安装{}版本HomeAssistant失败,请检查版本号与网络连接,两秒后准备重新安装...".format(ha_version))
+            logging.error("[ERROR] 安装{}版本HomeAssistant失败,请检查版本号与网络连接,两秒后准备重新安装...".format(ha_version))
             time.sleep(2)
             self.upgrade_specific_ha()
         elif code.returncode == 0:
-            Logger.info("[INFO] 安装{}HomeAssistant成功".format(ha_version))
+            logging.info("[INFO] 安装{}HomeAssistant成功".format(ha_version))
 
     # 安装HomeAssistant
     def install_ha(self):
         code = subprocess.run("sudo pip3 install homeassistant", shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 安装HomeAssistant失败,请检查网络连接,两秒后准备重新安装")
+            logging.error("[ERROR] 安装HomeAssistant失败,请检查网络连接,两秒后准备重新安装")
             time.sleep(2)
             self.install_ha()
         elif code.returncode == 0:
@@ -177,9 +150,9 @@ class Service:
                         "ExecStart=/usr/local/bin/hass\n\n"
                         "[Install]\n"
                         "WantedBy=multi-user.target\n")
-            Logger.info("[INFO] HomeAssistant自启动建立成功")
+            logging.info("[INFO] HomeAssistant自启动建立成功")
         except FileNotFoundError:
-            Logger.error("[ERROR] 自启动建立失败,请检查自启动配置路径.")
+            logging.error("[ERROR] 自启动建立失败,请检查自启动配置路径.")
 
     # samba安装 TODO
     def install_samba(self):
@@ -215,7 +188,7 @@ class Service:
     def install_mosquitto(self):
         code = subprocess.run("sudo apt-get install mosquitto", shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 安装mosquitto失败,请检查网络连接,两秒后准备重新安装")
+            logging.error("[ERROR] 安装mosquitto失败,请检查网络连接,两秒后准备重新安装")
             time.sleep(2)
             self.install_mosquitto()
         elif code.returncode == 0:
@@ -224,9 +197,9 @@ class Service:
                     f.write("allow_anonymous false\n"
                             "password_file /etc/mosquitto/pwfile\n"
                             "listener 1883\n")
-                    Logger.info("[INFO] 写入MQTT配置成功!")
+                    logging.info("[INFO] 写入MQTT配置成功!")
             except FileNotFoundError:
-                Logger.error("[ERROR] 找不到MQTT配置,请检查路径.")
+                logging.error("[ERROR] 找不到MQTT配置,请检查路径.")
 
             mqtt_user_name = input("请输入MQTT用户名:")
             subprocess.run("sudo mosquitto_passwd -c /etc/mosquitto/pwfile {}".format(mqtt_user_name), shell=True)
@@ -244,42 +217,42 @@ class Service:
 
     def upgrade_python(self):
         import os
-        Logger.info("[INFO] 开始安装依赖")
+        logging.info("[INFO] 开始安装依赖")
         time.sleep(2)
         code = subprocess.run("sudo apt-get install build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev",
                               shell=True)
         if code.returncode != 0:
-            Logger.error("[ERROR] 安装依赖失败,请检查网络连接,两秒后准备重新安装")
+            logging.error("[ERROR] 安装依赖失败,请检查网络连接,两秒后准备重新安装")
             time.sleep(2)
             self.upgrade_python()
         elif code.returncode == 0:
             code = subprocess.run("sudo apt-get install wget", shell=True)
             if code.returncode != 0:
-                Logger.error("[ERROR] 下载wget失败,请检查网络连接,两秒后准备重新安装")
+                logging.error("[ERROR] 下载wget失败,请检查网络连接,两秒后准备重新安装")
                 time.sleep(2)
                 self.prepare()
             elif code.returncode == 0:
-                Logger.info("[INFO] 下载Python安装包")
+                logging.info("[INFO] 下载Python安装包")
                 time.sleep(2)
                 code = subprocess.run("wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz", shell=True)
                 if code.returncode != 0:
-                    Logger.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
+                    logging.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
                     time.sleep(2)
                     self.prepare()
                 elif code.returncode == 0:
-                    Logger.info("[INFO] 开始解压安装包")
+                    logging.info("[INFO] 开始解压安装包")
                     time.sleep(1)
                     subprocess.run("sudo tar -zvxf Python-3.7.2.tgz", shell=True)
                     os.chdir("/home/pi/Python-3.7.2")
-                    Logger.info("[INFO] 开始编译Python")
+                    logging.info("[INFO] 开始编译Python")
                     time.sleep(2)
                     subprocess.run("sudo ./configure && sudo make && sudo make install", shell=True)
-                    Logger.info("[INFO] 建立链接")
+                    logging.info("[INFO] 建立链接")
                     time.sleep(1)
                     # subprocess.run("sudo mv /usr/bin/python3.5.3 /usr/bin/python3.4.2", shell=True)
                     # TODO
                     subprocess.run("sudo ln -s /usr/local/python37/bin/python37 /usr/local/bin/python3", shell=True)
-        Logger.info("\n")
+        logging.info("\n")
         self.get_python_version()
 
 
@@ -290,22 +263,22 @@ class Install:
         service = Service()
         for opt, value in opts:
             if opt == "-h" or opt == "--help":
-                Logger.info("-w 添加wifi配置")
-                Logger.info("-p 更新软件包列表与软件")
-                Logger.info("-s 安装samba服务")
-                Logger.info("-h 显示帮助")
-                Logger.info("--help 显示帮助")
-                Logger.info("--pv 查看Python3版本")
-                Logger.info("--hv 查看HomeAssistant版本")
-                Logger.info("--cps 更换pip源")
-                Logger.info("--cas 更换apt源")
-                Logger.info("--uh 更新HomeAssistant")
-                Logger.info("--ih 安装HomeAssistant")
-                Logger.info("--has 配置HomeAssistant自启动")
-                Logger.info("--im 安装mosquitto服务器")
-                Logger.info("--rh 重启HomeAssistant")
-                Logger.info("--phl 查看HomeAssistant日志")
-                Logger.info("--up 更新Python3版本")
+                logging.info("-w 添加wifi配置")
+                logging.info("-p 更新软件包列表与软件")
+                logging.info("-s 安装samba服务")
+                logging.info("-h 显示帮助")
+                logging.info("--help 显示帮助")
+                logging.info("--pv 查看Python3版本")
+                logging.info("--hv 查看HomeAssistant版本")
+                logging.info("--cps 更换pip源")
+                logging.info("--cas 更换apt源")
+                logging.info("--uh 更新HomeAssistant")
+                logging.info("--ih 安装HomeAssistant")
+                logging.info("--has 配置HomeAssistant自启动")
+                logging.info("--im 安装mosquitto服务器")
+                logging.info("--rh 重启HomeAssistant")
+                logging.info("--phl 查看HomeAssistant日志")
+                logging.info("--up 更新Python3版本")
             elif opt == "-w":
                 service.set_wifi()
             elif opt == "-p":
@@ -337,11 +310,13 @@ class Install:
             elif opt == "--up":
                 service.upgrade_python()
     except getopt.GetoptError:
-        Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
+        logging.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
 
 
 if __name__ == '__main__':
     try:
         Install()
     except PermissionError:
-        Logger.error("[ERROR] 权限不足,请使用sudo权限运行此程序")
+        logging.error("[ERROR] 权限不足,请使用sudo权限运行此程序")
+    except UnicodeEncodeError:
+        logging.error("[ERROR] Please install chinese font")
