@@ -70,9 +70,11 @@ class Service:
     # 获取当前Python版本
     @staticmethod
     def get_python_version():
+        Logger.info("[INFO] Python3 版本")
         code = subprocess.run("python3 -V", shell=True)
         if code.returncode != 0:
             Logger.error("[ERROR] 未找到Python3")
+        Logger.info("[INFO] Python2 版本")
         code = subprocess.run("python -V", shell=True)
         if code.returncode != 0:
             Logger.error("[ERROR] 未找到Python2")
