@@ -155,7 +155,7 @@ class Service:
             time.sleep(2)
             self.upgrade_specific_ha()
         elif code.returncode == 0:
-            Logger.info("[INFO] 安装{}HomeAssistant成功".format(ha_version))
+            Logger.info("[INFO] 安装{}版本HomeAssistant成功".format(ha_version))
 
     # 安装HomeAssistant
     def install_ha(self):
