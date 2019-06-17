@@ -22,7 +22,13 @@
 - `--rh` 重启HA
 - `--phl` 打印HA log
 - `--up` 更新Python版本为3.7.2
+- `--sh` 运行HA实例
+- `--sth` 结束HA的运行
 
 
 ## 示例
+以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
 `sudo python3 install.py -w --ih 0.94.0 --phl`
+
+升级Python3版本
+`sudo python3 install.py --up`
