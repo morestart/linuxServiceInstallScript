@@ -12,15 +12,24 @@ class Logger:
 
     @staticmethod
     def info(info):
-        print(Logger.OKBLUE + info + Logger.ENDC)
+        try:
+            print(Logger.OKBLUE + info + Logger.ENDC)
+        except UnicodeEncodeError:
+            print("[ERROR] 请设置中文字体再运行此程序")
 
     @staticmethod
     def warn(info):
-        print(Logger.WARNING + info + Logger.ENDC)
+        try:
+            print(Logger.WARNING + info + Logger.ENDC)
+        except UnicodeEncodeError:
+            print("[ERROR] 请设置中文字体再运行此程序")
 
     @staticmethod
     def error(info):
-        print(Logger.FAIL + info + Logger.ENDC)
+        try:
+            print(Logger.FAIL + info + Logger.ENDC)
+        except UnicodeEncodeError:
+            print("[ERROR] 请设置中文字体再运行此程序")
 
 
 class Service:
@@ -267,8 +276,9 @@ class Service:
                     subprocess.run("sudo ./configure && sudo make && sudo make install", shell=True)
                     Logger.info("[INFO] 建立链接")
                     time.sleep(1)
-                    subprocess.run("sudo mv /usr/bin/python /usr/bin/python3.4.2", shell=True)
-                    subprocess.run("sudo ln -s /usr/local/python37/bin/python37 /usr/bin/python", shell=True)
+                    # subprocess.run("sudo mv /usr/bin/python3.5.3 /usr/bin/python3.4.2", shell=True)
+                    # TODO
+                    subprocess.run("sudo ln -s /usr/local/python37/bin/python37 /usr/local/bin/python3", shell=True)
         Logger.info("\n")
         self.get_python_version()
 
@@ -326,8 +336,6 @@ class Install:
                 service.print_ha_log()
             elif opt == "--up":
                 service.upgrade_python()
-            else:
-                Logger.error("[ERROR] 没有这个选项, 请重新输入...")
     except getopt.GetoptError:
         Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
 
@@ -336,4 +344,4 @@ if __name__ == '__main__':
     try:
         Install()
     except PermissionError:
-        Logger.error("[ERROR] 没有权限,请使用sudo运行此程序")
+        Logger.error("[ERROR] 权限不足,请使用sudo权限运行此程序")
