@@ -240,6 +240,14 @@ class Service:
     def restart_ha():
         subprocess.run("sudo systemctl restart home-assistant@pi", shell=True)
 
+    @staticmethod
+    def start_ha():
+        subprocess.run("sudo systemctl start home-assistant@pi", shell=True)
+
+    @staticmethod
+    def stop_ha():
+        subprocess.run("sudo systemctl stop home-assistant@pi", shell=True)
+
     # 查看log
     @staticmethod
     def print_ha_log():
@@ -285,7 +293,7 @@ class Service:
 class Install:
     try:
         opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
-                                                              "rh", "phl", "up", "ush"])
+                                                              "rh", "phl", "up", "ush", "sh", "sth"])
         service = Service()
         for opt, value in opts:
             if opt == "-h" or opt == "--help":
@@ -301,6 +309,8 @@ class Install:
                 Logger.info("--ih 安装HomeAssistant")
                 Logger.info("--uh 更新HomeAssistant")
                 Logger.info("--has 配置HomeAssistant自启动")
+                Logger.info("--sh 运行HomeAssistant实例")
+                Logger.info("--sth 停止HomeAssistant实例")
                 Logger.info("--rh 重启HomeAssistant")
                 Logger.info("--phl 查看HomeAssistant日志")
                 Logger.info("--hv 查看HomeAssistant版本")
