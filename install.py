@@ -15,21 +15,21 @@ class Logger:
         try:
             print(Logger.OKBLUE + info + Logger.ENDC)
         except UnicodeEncodeError:
-            print("[ERROR] 请设置中文字体再运行此程序")
+            print("[ERROR] Please use vnc or terminal install chinese font...")
 
     @staticmethod
     def warn(info):
         try:
             print(Logger.WARNING + info + Logger.ENDC)
         except UnicodeEncodeError:
-            print("[ERROR] 请设置中文字体再运行此程序")
+            print("[ERROR] Please use vnc or terminal install chinese font...")
 
     @staticmethod
     def error(info):
         try:
             print(Logger.FAIL + info + Logger.ENDC)
         except UnicodeEncodeError:
-            print("[ERROR] 请设置中文字体再运行此程序")
+            print("[ERROR] Please use vnc or terminal install chinese font...")
 
 
 class Service:
@@ -275,15 +275,14 @@ class Service:
             elif code.returncode == 0:
                 Logger.info("[INFO] 下载Python安装包")
                 time.sleep(2)
-                code = subprocess.run("wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz", shell=True)
+                code = subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz", shell=True)
                 if code.returncode != 0:
                     Logger.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
                     time.sleep(2)
-                    self.prepare()
                     self.upgrade_python()
                 elif code.returncode == 0:
                     Logger.info("[INFO] 开始解压安装包")
-                    time.sleep(1)
+                    time.sleep(2)
                     subprocess.run("sudo tar -zvxf Python-3.7.2.tgz", shell=True)
                     os.chdir("/home/pi/Python-3.7.2")
                     Logger.info("[INFO] 开始编译Python")
