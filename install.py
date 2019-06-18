@@ -138,6 +138,8 @@ class Service:
                     Logger.info("[INFO] 更新软件完毕")
             elif confirm == "n" or confirm == "N":
                 pass
+            else:
+                pass
 
     # 更新HomeAssistant
     def upgrade_ha(self):
