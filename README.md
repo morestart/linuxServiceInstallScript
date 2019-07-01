@@ -1,6 +1,53 @@
 # Raspberry Pi Service Install Script
 
+## Installation
+ From curl:
+ 
+ `sudo curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
+ 
+## Documentation
+
+-h get help info
+
+-w add wifi config
+
+-p Updating Package List and Software
+
+-s Installing Samba services
+
+--im Installing mosquitto services
+
+--------------------
+--cps change pip source
+
+--cas change apt source
+
+--------------------
+--ih install HomeAssistant
+
+--uh upgrade HomeAssistant
+
+--has set HomeAssistant auto start
+
+--sh run HomeAssistant
+
+--sth stop HomeAssistant
+
+--rh restart HomeAssistant
+
+--phl get HomeAssistant log
+
+--hv get HomeAssistant version
+
+--------------------
+--pv get Python version
+
+--up upgrade Python3 version
+
+
+
 ## 使用说明
+
 执行以下命令下载程序
 
 `sudo curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
