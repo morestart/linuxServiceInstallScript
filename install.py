@@ -268,6 +268,7 @@ class Service:
             time.sleep(2)
             self.install_ha()
         elif code.returncode == 0:
+            self.start_ha()
             self.ha_auto_start()
 
     # HA 自启动
