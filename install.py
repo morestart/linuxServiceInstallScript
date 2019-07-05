@@ -20,21 +20,21 @@ class Logger:
         try:
             print(Logger.OKBLUE + info + Logger.ENDC)
         except UnicodeEncodeError:
-            print("[ERROR] Not found chinese font, you must install chinese font, if not, we will use english..")
+            Logger.warn("[ERROR] Not found chinese font, you must install chinese font, if not, we will use english..")
 
     @staticmethod
     def warn(info):
         try:
             print(Logger.WARNING + info + Logger.ENDC)
         except UnicodeEncodeError:
-            print("[ERROR] Not found chinese font, you must install chinese font, if not, we will use english..")
+            Logger.warn("[ERROR] Not found chinese font, you must install chinese font, if not, we will use english..")
 
     @staticmethod
     def error(info):
         try:
             print(Logger.FAIL + info + Logger.ENDC)
         except UnicodeEncodeError:
-            print("[ERROR] Not found chinese font, you must install chinese font, if not, we will use english..")
+            Logger.warn("[ERROR] Not found chinese font, you must install chinese font, if not, we will use english..")
 
 
 class Service:
@@ -170,6 +170,10 @@ class Service:
 
     # 更新源与软件
     def prepare(self):
+        if language == 'zh_CN':
+            Logger.info("[INFO] 准备更新软件包列表")
+        else:
+            Logger.info("[INFO] Prepare update software list")
         code = subprocess.run("sudo apt-get update", shell=True)
         if code.returncode != 0:
             if language == 'zh_CN':
@@ -208,6 +212,10 @@ class Service:
 
     # 更新HomeAssistant
     def upgrade_ha(self):
+        if language == 'zh_CN':
+            Logger.info("[INFO] 准备更新HomeAssistant")
+        else:
+            Logger.info("[INFO] Prepare upgrade HomeAssistant")
         code = subprocess.run("sudo pip3 install -U homeassistant", shell=True)
         if code.returncode != 0:
             if language == 'zh_CN':
@@ -244,6 +252,11 @@ class Service:
 
     # 安装HomeAssistant
     def install_ha(self):
+        if language == 'zh_CN':
+            Logger.info("[INFO] 开始安装HomeAssistant")
+        else:
+            Logger.info("[INFO] Start installation HomeAssistant")
+
         code = subprocess.run("sudo pip3 install homeassistant", shell=True)
         if code.returncode != 0:
             if language == 'zh_CN':
@@ -259,6 +272,10 @@ class Service:
 
     # HA 自启动
     def ha_auto_start(self):
+        if language == 'zh_CN':
+            Logger.info("[INFO] 准备配置HomeAssistant自启动")
+        else:
+            Logger.info("[INFO] Prepare to configure HomeAssistant self-startup")
         try:
             with open(self.auto_start_conf_add, "w+") as f:
                 f.write("[Unit]\n"
@@ -282,6 +299,10 @@ class Service:
 
     # samba安装 TODO
     def install_samba(self):
+        if language == 'zh_CN':
+            Logger.info("[INFO] 准备安装Samba")
+        else:
+            Logger.info("[INFO] Prepare to install Samba")
         subprocess.run("sudo apt-get install samba samba-common", shell=True)
         subprocess.run("sudo smbpasswd -a pi", shell=True)
         subprocess.run("sudo rm " + self.smb_conf_path, shell=True)
@@ -312,6 +333,10 @@ class Service:
 
     # 安装 mosquitto
     def install_mosquitto(self):
+        if language == 'zh_CN':
+            Logger.info("[INFO] 准备安装Mosquitto`")
+        else:
+            Logger.info("[INFO] Prepare to install Mosquitto")
         self.prepare()
         code = subprocess.run("sudo apt-get install mosquitto", shell=True)
         if code.returncode != 0:
@@ -347,27 +372,72 @@ class Service:
     # 重启HA
     @staticmethod
     def restart_ha():
-        subprocess.run("sudo systemctl restart home-assistant@pi", shell=True)
+        code = subprocess.run("sudo systemctl restart home-assistant@pi", shell=True)
+        if code.returncode != 0:
+            if language == 'zh_CN':
+                Logger.error("[ERROR] 重启HomeAssistant失败")
+            else:
+                Logger.error("[ERROR] restart HomeAssistant filed")
+        else:
+            if language == 'zh_CN':
+                Logger.info("[INFO] 重启HomeAssistant成功")
+            else:
+                Logger.info('[INFO] restart HomeAssistant success')
 
     @staticmethod
     def start_ha():
-        subprocess.run("sudo systemctl start home-assistant@pi", shell=True)
+        code = subprocess.run("sudo systemctl start home-assistant@pi", shell=True)
+        if code.returncode != 0:
+            if language == 'zh_CN':
+                Logger.error("[ERROR] 启动HomeAssistant失败")
+            else:
+                Logger.error("[ERROR] start HomeAssistant filed")
+        else:
+            if language == 'zh_CN':
+                Logger.info("[INFO] 启动HomeAssistant成功")
+            else:
+                Logger.info('[INFO] start HomeAssistant success')
 
     @staticmethod
     def stop_ha():
-        subprocess.run("sudo systemctl stop home-assistant@pi", shell=True)
+        code = subprocess.run("sudo systemctl stop home-assistant@pi", shell=True)
+        if code.returncode != 0:
+            if language == 'zh_CN':
+                Logger.error("[ERROR] 停止HomeAssistant失败")
+            else:
+                Logger.error("[ERROR] stop HomeAssistant filed")
+        else:
+            if language == 'zh_CN':
+                Logger.info("[INFO] 停止HomeAssistant成功")
+            else:
+                Logger.info('[INFO] stop HomeAssistant success')
 
     # 查看log
     @staticmethod
     def print_ha_log():
-        subprocess.run("sudo journalctl -f -u home-assistant@pi", shell=True)
+        code = subprocess.run("sudo journalctl -f -u home-assistant@pi", shell=True)
+        if code.returncode != 0:
+            if language == 'zh_CN':
+                Logger.error("[ERROR] 查看HomeAssistant日志失败")
+            else:
+                Logger.error("[ERROR] view HomeAssistant log file filed")
+        else:
+            if language == 'zh_CN':
+                Logger.info("[INFO] 查看HomeAssistant日志成功")
+            else:
+                Logger.info('[INFO] view HomeAssistant log file success')
 
     def upgrade_python(self):
         base_dir = os.path.abspath(os.path.dirname(__file__))
         pv = 'Python-3.7.3'
         if language == 'zh_CN':
+            Logger.info("[INFO] 准备安装{}".format(pv))
+        else:
+            Logger.info("[INFO] Prepare to install Samba")
+
+        if language == 'zh_CN':
             Logger.info("[INFO] 准备更新Python3版本")
-            Logger.info("[INFO] 准备卸载冲突, 请选择y")
+            Logger.info("[INFO] 准备卸载冲突, 如果有请选择y")
         else:
             Logger.info("[INFO] Ready to update Python 3")
             Logger.info("[INFO] Preparing for Unloading Conflict")
