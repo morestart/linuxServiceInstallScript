@@ -7,42 +7,42 @@
  
 ## Documentation
 
--h get help info
+`-h` get help info
 
--w add wifi config
+`-w` add wifi config
 
--p Updating Package List and Software
+`-p` Updating Package List and Software
 
--s Installing Samba services
+`-s` Installing Samba services
 
---im Installing mosquitto services
-
---------------------
---cps change pip source
-
---cas change apt source
+`--im` Installing mosquitto services
 
 --------------------
---ih install HomeAssistant
+`--cps` change pip source
 
---uh upgrade HomeAssistant
-
---has set HomeAssistant auto start
-
---sh run HomeAssistant
-
---sth stop HomeAssistant
-
---rh restart HomeAssistant
-
---phl get HomeAssistant log
-
---hv get HomeAssistant version
+`--cas` change apt source
 
 --------------------
---pv get Python version
+`--ih` install HomeAssistant
 
---up upgrade Python3 version
+`--uh` upgrade HomeAssistant
+
+`--has` set HomeAssistant auto start
+
+`--sh` run HomeAssistant
+
+`--sth` stop HomeAssistant
+
+`--rh` restart HomeAssistant
+
+`--phl` get HomeAssistant log
+
+`--hv` get HomeAssistant version
+
+--------------------
+`--pv` get Python version
+
+`--up` upgrade Python3 version
 
 
 
