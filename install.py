@@ -363,7 +363,7 @@ class Service:
     def upgrade_python(self):
         if language == 'zh_CN':
             Logger.info("[INFO] 准备更新Python3版本")
-            Logger.info("[INFO] 准备卸载冲突")
+            Logger.info("[INFO] 准备卸载冲突, 请选择y")
         else:
             Logger.info("[INFO] Ready to update Python 3")
             Logger.info("[INFO] Preparing for Unloading Conflict")
