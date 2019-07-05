@@ -457,6 +457,7 @@ class Service:
                         else:
                             Logger.info("[INFO] {} installation completed".format(pv))
         Logger.info("\n")
+        os.remove(pv + '.tgz')
         self.get_python_version()
 
 
