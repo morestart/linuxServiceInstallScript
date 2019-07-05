@@ -363,8 +363,10 @@ class Service:
     def upgrade_python(self):
         if language == 'zh_CN':
             Logger.info("[INFO] 准备更新Python3版本")
+            Logger.info("[INFO] 准备卸载冲突")
         else:
             Logger.info("[INFO] Ready to update Python 3")
+            Logger.info("[INFO] Preparing for Unloading Conflict")
         import os
         code = subprocess.run("sudo pip3 uninstall homeassistant", shell=True)
         if code.returncode != 0:
@@ -416,8 +418,8 @@ class Service:
                     else:
                         Logger.info("[INFO] Start decompressing the installation package")
                     time.sleep(2)
-                    subprocess.run("sudo tar -zvxf Python-3.7.2.tgz", shell=True)
-                    os.chdir("/home/pi/Python-3.7.2")
+                    subprocess.run("sudo tar -zvxf Python-3.7.3.tgz", shell=True)
+                    os.chdir("/home/pi/Python-3.7.3")
                     if language == 'zh_CN':
                         Logger.info("[INFO] 开始编译Python")
                     else:
@@ -425,9 +427,9 @@ class Service:
                     time.sleep(2)
                     subprocess.run("sudo ./configure && sudo make && sudo make install", shell=True)
                     if language == 'zh_CN':
-                        Logger.info("[INFO] 已完成Python3.7.2安装")
+                        Logger.info("[INFO] 已完成Python3.7.3安装")
                     else:
-                        Logger.info("[INFO] Python 3.7.2 installation completed")
+                        Logger.info("[INFO] Python 3.7.3 installation completed")
         Logger.info("\n")
         self.get_python_version()
 
