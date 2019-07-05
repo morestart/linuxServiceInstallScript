@@ -3,6 +3,8 @@ import subprocess
 import sys
 import time
 import locale
+import os
+from pathlib import Path
 
 language = locale.getdefaultlocale()[0]
 
@@ -361,13 +363,15 @@ class Service:
         subprocess.run("sudo journalctl -f -u home-assistant@pi", shell=True)
 
     def upgrade_python(self):
+        base_dir = os.path.abspath(os.path.dirname(__file__))
+        pv = 'Python-3.7.3'
         if language == 'zh_CN':
             Logger.info("[INFO] 准备更新Python3版本")
             Logger.info("[INFO] 准备卸载冲突, 请选择y")
         else:
             Logger.info("[INFO] Ready to update Python 3")
             Logger.info("[INFO] Preparing for Unloading Conflict")
-        import os
+
         code = subprocess.run("sudo pip3 uninstall homeassistant", shell=True)
         if code.returncode != 0:
             pass
@@ -398,38 +402,60 @@ class Service:
                 time.sleep(2)
                 self.prepare()
             elif code.returncode == 0:
-                if language == 'zh_CN':
-                    Logger.info("[INFO] 下载Python安装包")
-                else:
-                    Logger.info("[INFO] Download the Python installation package")
-                time.sleep(2)
-                code = subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz", shell=True)
-                if code.returncode != 0:
-                    if language == 'zh_CN':
-                        Logger.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
-                    else:
-                        Logger.error("[ERROR] Download Python failed. Please check your network connection and "
-                                     "prepare to reinstall it in two seconds.")
-                    time.sleep(2)
-                    self.upgrade_python()
-                elif code.returncode == 0:
+                file_dir = base_dir + '/'.format(pv) + '.tgz'
+                file = Path(file_dir)
+                if file.is_file():
                     if language == 'zh_CN':
                         Logger.info("[INFO] 开始解压安装包")
                     else:
                         Logger.info("[INFO] Start decompressing the installation package")
                     time.sleep(2)
-                    subprocess.run("sudo tar -zvxf Python-3.7.3.tgz", shell=True)
-                    os.chdir("/home/pi/Python-3.7.3")
+                    subprocess.run("sudo tar -zvxf {}.tgz".format(pv), shell=True)
+                    os.chdir("{}/{}".format(base_dir, pv))
                     if language == 'zh_CN':
-                        Logger.info("[INFO] 开始编译Python")
+                        Logger.info("[INFO] 开始编译{}".format(pv))
                     else:
                         Logger.info("[INFO] Start compiling Python")
                     time.sleep(2)
                     subprocess.run("sudo ./configure && sudo make && sudo make install", shell=True)
                     if language == 'zh_CN':
-                        Logger.info("[INFO] 已完成Python3.7.3安装")
+                        Logger.info("[INFO] 已完成{}安装".format(pv))
                     else:
-                        Logger.info("[INFO] Python 3.7.3 installation completed")
+                        Logger.info("[INFO] {} installation completed".format(pv))
+                else:
+                    if language == 'zh_CN':
+                        Logger.info("[INFO] 下载Python安装包")
+                    else:
+                        Logger.info("[INFO] Download the Python installation package")
+                    time.sleep(2)
+                    # TODO
+                    code = subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.3/{}.tgz".format(pv), shell=True)
+                    if code.returncode != 0:
+                        if language == 'zh_CN':
+                            Logger.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
+                        else:
+                            Logger.error("[ERROR] Download Python failed. Please check your network connection and "
+                                         "prepare to reinstall it in two seconds.")
+                        time.sleep(2)
+                        self.upgrade_python()
+                    elif code.returncode == 0:
+                        if language == 'zh_CN':
+                            Logger.info("[INFO] 开始解压安装包")
+                        else:
+                            Logger.info("[INFO] Start decompressing the installation package")
+                        time.sleep(2)
+                        subprocess.run("sudo tar -zvxf {}.tgz".format(pv), shell=True)
+                        os.chdir("{}/{}".format(base_dir, pv))
+                        if language == 'zh_CN':
+                            Logger.info("[INFO] 开始编译{}".format(pv))
+                        else:
+                            Logger.info("[INFO] Start compiling Python")
+                        time.sleep(2)
+                        subprocess.run("sudo ./configure && sudo make && sudo make install", shell=True)
+                        if language == 'zh_CN':
+                            Logger.info("[INFO] 已完成{}安装".format(pv))
+                        else:
+                            Logger.info("[INFO] {} installation completed".format(pv))
         Logger.info("\n")
         self.get_python_version()
 
