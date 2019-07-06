@@ -270,6 +270,19 @@ class Service:
         elif code.returncode == 0:
             self.start_ha()
             self.ha_auto_start()
+            # 安装完成后提示用户是否打印HA运行日志
+            if language == 'zh_CN':
+                confirm = input("是否查看HomeAssistant日志?(y or n)..")
+                if confirm == "y" or confirm == "Y":
+                    self.print_ha_log()
+                elif confirm == "n" or confirm == "n":
+                    pass
+            else:
+                confirm = input("Do you want to see HomeAssistant log?(y or n)..")
+                if confirm == "y" or confirm == "Y":
+                    self.print_ha_log()
+                elif confirm == "n" or confirm == "n":
+                    pass
 
     # HA 自启动
     def ha_auto_start(self):
@@ -499,8 +512,8 @@ class Service:
                     else:
                         Logger.info("[INFO] Download the Python installation package")
                     time.sleep(2)
-                    # TODO
-                    code = subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.3/{}.tgz".format(pv), shell=True)
+                    code = subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.3/{}.tgz".format(pv),
+                                          shell=True)
                     if code.returncode != 0:
                         if language == 'zh_CN':
                             Logger.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
