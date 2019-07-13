@@ -443,14 +443,13 @@ class Service:
 
     def upgrade_python(self):
         base_dir = os.path.abspath(os.path.dirname(__file__))
-        pv = 'Python-3.7.3'
+        pv = 'Python-3.7.2'
         if language == 'zh_CN':
             Logger.info("[INFO] 准备安装{}".format(pv))
         else:
             Logger.info("[INFO] Prepare to install Samba")
 
         if language == 'zh_CN':
-            Logger.info("[INFO] 准备更新Python3版本")
             Logger.info("[INFO] 准备卸载冲突, 如果有请选择y")
         else:
             Logger.info("[INFO] Ready to update Python 3")
@@ -512,7 +511,7 @@ class Service:
                     else:
                         Logger.info("[INFO] Download the Python installation package")
                     time.sleep(2)
-                    code = subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.3/{}.tgz".format(pv),
+                    code = subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.2/{}.tgz".format(pv),
                                           shell=True)
                     if code.returncode != 0:
                         if language == 'zh_CN':
@@ -541,7 +540,7 @@ class Service:
                         else:
                             Logger.info("[INFO] {} installation completed".format(pv))
         Logger.info("\n")
-        os.remove(pv + '.tgz')
+        # os.remove(pv + '.tgz')
         self.get_python_version()
 
 
