@@ -430,13 +430,10 @@ class Service:
                     #     f.write()
 
 
-
-
-
 class Install:
     try:
         opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
-                                                              "rh", "phl", "up", "ush", "sh", "sth"])
+                                                              "rh", "phl", "up", "ush", "sh", "sth", "id"])
         service = Service()
         for opt, value in opts:
             if opt == "-h" or opt == "--help":
@@ -495,6 +492,8 @@ class Install:
                 service.start_ha()
             elif opt == "--sth":
                 service.stop_ha()
+            elif opt == "--id":
+                service.install_docker()
     except getopt.GetoptError:
         Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
 
