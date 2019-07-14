@@ -394,14 +394,14 @@ class Service:
                 self.install_docker()
             else:
                 Logger.info("[INFO] 准备添加国内镜像源")
-                code = subprocess.run("sudo add-apt-repository \"deb [arch=armhf] https://mirrors.ustc.edu.cn/docker-ce/linux/raspbian $(lsb_release -cs) stable\"")
-                if code.returncode != 0:
-                    Logger.error("[ERROR] 添加国内镜像源失败,尝试添加官方镜像源")
-                    # TODO: 国外镜像失败处理
-                    subprocess.run("sudo add-apt-repository \"deb [arch=armhf] https://download.docker.com"
-                                   "/linux/raspbian $(lsb_release -cs) stable\"", shell=True)
-                else:
-                    Logger.info("[INFO] 国内镜像添加成功")
+                # code = subprocess.run("sudo add-apt-repository \"deb [arch=armhf] https://mirrors.ustc.edu.cn/docker-ce/linux/raspbian $(lsb_release -cs) stable\"")
+                # if code.returncode != 0:
+                #     Logger.error("[ERROR] 添加国内镜像源失败,尝试添加官方镜像源")
+                #     # TODO: 国外镜像失败处理
+                #     subprocess.run("sudo add-apt-repository \"deb [arch=armhf] https://download.docker.com"
+                #                    "/linux/raspbian $(lsb_release -cs) stable\"", shell=True)
+                # else:
+                #     Logger.info("[INFO] 国内镜像添加成功")
                 self.prepare()
                 # TODO: 安装docker ce
                 code = subprocess.run("sudo apt-get install docker-ce", shell=True)
