@@ -2,11 +2,8 @@ import getopt
 import subprocess
 import sys
 import time
-import locale
 import os
 from pathlib import Path
-
-language = locale.getdefaultlocale()[0]
 
 
 class Logger:
@@ -442,10 +439,10 @@ class Install:
                 Logger.info("-p 更新软件包列表与软件")
                 Logger.info("-s 安装samba服务")
                 Logger.info("--im 安装mosquitto")
-                Logger.info("-" * 20)
+                Logger.info("-" * 30)
                 Logger.info("--cps 更换pip源")
                 Logger.info("--cas 更换apt源")
-                Logger.info("-" * 20)
+                Logger.info("-" * 30)
                 Logger.info("--ih 安装HomeAssistant")
                 Logger.info("--uh 更新HomeAssistant")
                 Logger.info("--has 配置HomeAssistant自启动")
@@ -454,9 +451,11 @@ class Install:
                 Logger.info("--rh 重启HomeAssistant")
                 Logger.info("--phl 查看HomeAssistant日志")
                 Logger.info("--hv 查看HomeAssistant版本")
-                Logger.info("-" * 20)
+                Logger.info("-" * 30)
                 Logger.info("--pv 查看Python版本")
                 Logger.info("--up 更新Python3版本")
+                Logger.info("-" * 30)
+                Logger.info("--id 安装docker CE")
 
             elif opt == "-w":
                 service.set_wifi()
