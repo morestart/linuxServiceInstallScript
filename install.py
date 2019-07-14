@@ -379,7 +379,7 @@ class Service:
             self.prepare()
             self.flag = 1
         Logger.info("[INFO] 准备安装docker CE依赖")
-        code = subprocess.run("sudo apt-get install apt-transport-https ca-certificates"
+        code = subprocess.run("sudo apt-get install apt-transport-https ca-certificates "
                               "gnupg2 lsb-release software-properties-common", shell=True)
         if code.returncode != 0:
             Logger.error("[ERROR] 安装依赖失败,2s后准备重新安装...")
