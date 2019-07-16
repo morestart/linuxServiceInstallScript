@@ -419,11 +419,31 @@ class Service:
                     #     f.write()
 
 
+class UbuntuService:
+    def __init__(self):
+        pass
+
+    def upgrade_python(self):
+        subprocess.run("sudo apt-get install wget", shell=True)
+        subprocess.run("wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz", shell=True)
+        subprocess.run("tar -xvzf Python-3.7.4.tgz", shell=True)
+        os.chdir("Python-3.7.4")
+        subprocess.run("./configure --with-ssl --prefix=/usr/local/python3", shell=True)
+        subprocess.run("sudo apt-get update && sudo apt-get install build-essential python-dev python-setuptools python-pip", shell=True)
+        subprocess.run("sudo make && sudo make install", shell=True)
+        subprocess.run("sudo rm -rf /usr/bin/python3", shell=True)
+        subprocess.run("sudo rm -rf /usr/bin/pip3", shell=True)
+        subprocess.run("sudo ln -s /usr/local/python3/bin/python3.7 /usr/bin/python3", shell=True)
+        subprocess.run("sudo ln -s /usr/local/python3/bin/pip3.7 /usr/bin/pip3", shell=True)
+
+
+
 class Install:
     try:
         opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
-                                                              "rh", "phl", "up", "ush", "sh", "sth", "id"])
+                                                              "rh", "phl", "up", "ush", "sh", "sth", "id", "uup"])
         service = Service()
+        ubuntuservice = UbuntuService()
         for opt, value in opts:
             if opt == "-h" or opt == "--help":
                 Logger.info("-h 显示帮助")
@@ -485,6 +505,8 @@ class Install:
                 service.stop_ha()
             elif opt == "--id":
                 service.install_docker()
+            elif opt == "-uup":
+                ubuntuservice.upgrade_python()
     except getopt.GetoptError:
         Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
 
