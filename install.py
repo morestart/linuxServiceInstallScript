@@ -505,7 +505,7 @@ class Install:
                 service.stop_ha()
             elif opt == "--id":
                 service.install_docker()
-            elif opt == "-uup":
+            elif opt == "--uup":
                 ubuntuservice.upgrade_python()
     except getopt.GetoptError:
         Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
@@ -516,3 +516,5 @@ if __name__ == '__main__':
         Install()
     except PermissionError:
         Logger.error("[ERROR] 权限不足,请使用sudo权限运行此程序")
+
+# sudo python3 install.py --uup
