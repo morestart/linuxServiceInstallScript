@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 import getpass
 
-
 username = getpass.getuser()
 
 
@@ -45,8 +44,7 @@ class BaseService:
         self.haAutoStartPath = "/etc/systemd/system/home-assistant@{}.service".format(self.username)
 
     # 获取当前Python版本
-    @staticmethod
-    def get_python_version():
+    def get_python_version(self):
         try:
             Logger.info("[INFO] Python3 版本")
             subprocess.run("python3 -V", shell=True, check=True)
@@ -85,15 +83,21 @@ class BaseService:
             self.prepare()
 
     # 获取当前HA版本
-    @staticmethod
-    def get_ha_version():
+    def get_ha_version(self):
         try:
             subprocess.run("hass --version", shell=True)
         except subprocess.CalledProcessError:
             Logger.error("[ERROR] 未安装HomeAssistant")
 
     def install_ha(self):
-        return
+        try:
+            Logger.info("[INFO] 准备安装HomeAssistant")
+            subprocess.run("sudo pip3 install homeassistant", shell=True, check=True)
+            Logger.info("[INFO] HomeAssistant安装成功")
+        except subprocess.CalledProcessError:
+            Logger.error("[ERROR] 安装失败,2s后准备重试...")
+            time.sleep(2)
+            self.install_ha()
 
     # 更新HomeAssistant
     def upgrade_ha(self):
@@ -179,10 +183,9 @@ class BaseService:
 
 class UbuntuService(BaseService):
     def __init__(self):
-        BaseService.__init__(self)
+        super().__init__()
 
-    @staticmethod
-    def get_python_version():
+    def get_python_version(self):
         super().get_python_version()
 
     def prepare(self):
@@ -195,8 +198,7 @@ class UbuntuService(BaseService):
             self.prepare()
         super().prepare()
 
-    @staticmethod
-    def get_ha_version():
+    def get_ha_version(self):
         super().get_ha_version()
 
     def install_ha(self):
@@ -237,39 +239,36 @@ class UbuntuService(BaseService):
         Logger.info("[INFO] 准备更新Ubuntu Python3版本")
         self.prepare()
         Logger.info("[INFO] 准备安装依赖")
-        code = subprocess.run(
-            "sudo apt install wget && sudo apt install zlib* && sudo apt install libffi-dev "
-            "&& sudo apt install openssl && sudo apt install libssl-dev && sudo apt install make",
-            shell=True)
-        if code.returncode != 0:
+        try:
+            subprocess.run(
+                "sudo apt install wget && sudo apt install zlib* && sudo apt install libffi-dev "
+                "&& sudo apt install openssl && sudo apt install libssl-dev && sudo apt install make",
+                shell=True, check=True)
+            Logger.info("[INFO] 安装依赖成功")
+            Logger.info("[INFO] 准备下载Python3")
+            try:
+                subprocess.run("wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz", shell=True, check=True)
+                Logger.info("[INFO] 下载Python3成功")
+                Logger.info("[INFO] 准备安装GCC")
+                try:
+                    subprocess.run("sudo apt install gcc", shell=True, check=True)
+                    Logger.info("[INFO] 安装gcc成功")
+                    Logger.info("[INFO] 准备解压python")
+                    subprocess.run("tar -xvzf Python-3.7.4.tgz", shell=True)
+                    os.chdir("{}/Python-3.7.4".format(base_dir))
+                    subprocess.run("./configure", shell=True)
+                    subprocess.run("sudo make && sudo make install", shell=True)
+                    Logger.info("[INFO] Python3升级完成")
+                    subprocess.run("ln -s /usr/python3.7/bin/python3 /usr/bin/python3", shell=True)
+                except subprocess.CalledProcessError:
+                    Logger.error("[ERROR] 安装gcc失败,准备重新安装...")
+                    self.upgrade_python3()
+            except subprocess.CalledProcessError:
+                Logger.error("[ERROR] 下载Python3失败,准备重新下载...")
+                self.upgrade_python3()
+        except subprocess.CalledProcessError:
             Logger.error("[ERROR] 安装依赖失败")
             self.upgrade_python3()
-        else:
-            Logger.info("[INFO] 安装依赖成功")
-
-        Logger.info("[INFO] 准备下载Python3")
-        code = subprocess.run("wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 下载Python3失败,准备重新下载...")
-            self.upgrade_python3()
-        else:
-            Logger.info("[INFO] 下载Python3成功")
-
-        Logger.info("[INFO] 准备安装GCC")
-        code = subprocess.run("sudo apt install gcc", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 安装gcc失败,准备重新安装...")
-            self.upgrade_python3()
-        else:
-            Logger.info("[INFO] 安装gcc成功")
-        Logger.info("[INFO] 准备解压python")
-        subprocess.run("tar -xvzf Python-3.7.4.tgz", shell=True)
-        os.chdir("{}/Python-3.7.4".format(base_dir))
-
-        subprocess.run("./configure", shell=True)
-        subprocess.run("sudo make && sudo make install", shell=True)
-        Logger.info("[INFO] Python3升级完成")
-        subprocess.run("ln -s /usr/python3.7/bin/python3 /usr/bin/python3", shell=True)
 
     def set_wifi(self):
         Logger.warn("[WARNING] 暂不支持")
@@ -319,12 +318,10 @@ class DebianService(BaseService):
             Logger.warn("[WARNING] SSID不能为空")
             self.set_wifi()
 
-    @staticmethod
-    def get_python_version():
+    def get_python_version(self):
         super().get_python_version()
 
-    @staticmethod
-    def get_ha_version():
+    def get_ha_version(self):
         super().get_ha_version()
 
     # 换源 更换清华源 pip同步时间 5min
@@ -377,8 +374,12 @@ class DebianService(BaseService):
     def install_samba(self):
         Logger.info("[INFO] 准备安装Samba")
 
-        subprocess.run("sudo apt-get install samba samba-common", shell=True)
-        subprocess.run("sudo smbpasswd -a pi", shell=True)
+        try:
+            subprocess.run("sudo apt-get install samba samba-common", shell=True, check=True)
+        except subprocess.CalledProcessError:
+            Logger.error("ERROR] samba安装失败...准备重新安装")
+            self.install_samba()
+        subprocess.run("sudo smbpasswd -a {}".format(username), shell=True)
         subprocess.run("sudo rm " + self.smb_conf_path, shell=True)
         with open(self.smb_conf_path, "w") as f:
             f.write("[global]\n"
@@ -450,27 +451,13 @@ class DebianService(BaseService):
         Logger.info("[INFO] 准备安装{}".format(pv))
 
         Logger.info("[INFO] 准备卸载冲突, 如果有请选择y")
-
-        code = subprocess.run("sudo pip3 uninstall homeassistant", shell=True)
-        if code.returncode != 0:
-            pass
+        subprocess.run("sudo pip3 uninstall homeassistant", shell=True)
         Logger.info("[INFO] 开始安装依赖")
-
-        time.sleep(2)
-        code = subprocess.run("sudo apt-get install build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev",
-                              shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 安装依赖失败,请检查网络连接,两秒后准备重新安装")
-
-            time.sleep(2)
-            self.upgrade_python3()
-        elif code.returncode == 0:
-            code = subprocess.run("sudo apt-get install wget", shell=True)
-            if code.returncode != 0:
-                Logger.error("[ERROR] 下载wget失败,请检查网络连接,两秒后准备重新安装")
-                time.sleep(2)
-                self.prepare()
-            elif code.returncode == 0:
+        try:
+            subprocess.run("sudo apt-get install build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev",
+                           shell=True, check=True)
+            try:
+                subprocess.run("sudo apt-get install wget", shell=True, check=True)
                 file_dir = base_dir + '/'.format(pv) + '.tgz'
                 file = Path(file_dir)
                 if file.is_file():
@@ -485,13 +472,9 @@ class DebianService(BaseService):
                 else:
                     Logger.info("[INFO] 下载Python安装包")
                     time.sleep(2)
-                    code = subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.2/{}.tgz".format(pv),
-                                          shell=True)
-                    if code.returncode != 0:
-                        Logger.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
-                        time.sleep(2)
-                        self.upgrade_python3()
-                    elif code.returncode == 0:
+                    try:
+                        subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.2/{}.tgz".format(pv),
+                                       shell=True, check=True)
                         Logger.info("[INFO] 开始解压安装包")
                         time.sleep(2)
                         subprocess.run("sudo tar -zvxf {}.tgz".format(pv), shell=True)
@@ -500,9 +483,18 @@ class DebianService(BaseService):
                         time.sleep(2)
                         subprocess.run("sudo ./configure && sudo make && sudo make install", shell=True)
                         Logger.info("[INFO] 已完成{}安装".format(pv))
-
-        Logger.info("\n")
-        # os.remove(pv + '.tgz')
+                    except subprocess.CalledProcessError:
+                        Logger.error("[ERROR] 下载Python失败,请检查网络连接,两秒后准备重新安装")
+                        time.sleep(2)
+                        self.upgrade_python3()
+            except subprocess.CalledProcessError:
+                Logger.error("[ERROR] 下载wget失败,请检查网络连接,两秒后准备重新安装")
+                time.sleep(2)
+                self.prepare()
+        except subprocess.CalledProcessError:
+            Logger.error("[ERROR] 安装依赖失败,请检查网络连接,两秒后准备重新安装")
+            time.sleep(2)
+            self.upgrade_python3()
         self.get_python_version()
 
     #  安装docker ce
@@ -558,9 +550,10 @@ class DebianService(BaseService):
 class Install:
     def __init__(self, os_name):
         self.os_name = os_name
-        self.service = ""
+        self.service = None
 
-    def help_(self):
+    @staticmethod
+    def help_info():
         Logger.info("-h 显示帮助")
         Logger.info("-w 添加wifi配置")
         Logger.info("-p 更新软件包列表与软件")
@@ -585,14 +578,13 @@ class Install:
         Logger.info("--id 安装docker CE")
 
     def install(self):
-        global service
         try:
             opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps",
                                                                   "cas", "uh", "ih", "has", "im",
                                                                   "rh", "phl", "up", "ush", "sh", "sth", "id"])
 
             if self.os_name == "Windows":
-                Logger.error("[ERROR] 不支持Windows操作系统")
+                raise Exception("[ERROR] 不支持Windows操作系统")
             elif self.os_name == "Linux":
                 out = subprocess.check_output("cat /etc/os-release", shell=True)
                 out = out.decode("utf-8")
@@ -607,7 +599,7 @@ class Install:
 
             for opt, value in opts:
                 if opt == "-h" or opt == "--help":
-                    self.help_()
+                    self.help_info()
                 elif opt == "-w":
                     self.service.set_wifi()
                 elif opt == "-p":
@@ -646,13 +638,14 @@ class Install:
                     self.service.install_docker()
 
         except getopt.GetoptError:
-            Logger.error("[ERROR] 没有这个选项, 请查看可用选项")
-            self.help_()
+            self.help_info()
+            raise Exception("[ERROR] 没有这个选项, 请查看可用选项")
 
 
 if __name__ == '__main__':
     try:
         import platform
+
         system = platform.system()
         Install(system).install()
     except PermissionError:
