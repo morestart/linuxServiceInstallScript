@@ -601,7 +601,7 @@ class Install:
                     self.service = UbuntuService()
                 elif "NAME=\"Debian\"" in out:
                     Logger.info("[INFO] 检测到Debian操作系统")
-                    service = DebianService()
+                    self.service = DebianService()
                 else:
                     Logger.warn("[WARNING] 没有检测到操作系统版本")
 
@@ -609,41 +609,41 @@ class Install:
                 if opt == "-h" or opt == "--help":
                     self.help_()
                 elif opt == "-w":
-                    service.set_wifi()
+                    self.service.set_wifi()
                 elif opt == "-p":
-                    service.prepare()
+                    self.service.prepare()
                 elif opt == "-s":
-                    service.install_samba()
+                    self.service.install_samba()
                 elif opt == "--pv":
-                    service.get_python_version()
+                    self.service.get_python_version()
                 elif opt == "--hv":
-                    service.get_ha_version()
+                    self.service.get_ha_version()
                 elif opt == "--cps":
-                    service.change_pip_source()
+                    self.service.change_pip_source()
                 elif opt == "--cas":
-                    service.change_apt_source()
+                    self.service.change_apt_source()
                 elif opt == "--uh":
-                    service.upgrade_ha()
+                    self.service.upgrade_ha()
                 elif opt == "--usp":
-                    service.upgrade_specific_ha()
+                    self.service.upgrade_specific_ha()
                 elif opt == "--ih":
-                    service.install_ha()
+                    self.service.install_ha()
                 elif opt == "--has":
-                    service.auto_start_ha()
+                    self.service.auto_start_ha()
                 elif opt == "--im":
-                    service.install_mqtt_broker()
+                    self.service.install_mqtt_broker()
                 elif opt == "--rh":
-                    service.restart_ha()
+                    self.service.restart_ha()
                 elif opt == "--phl":
-                    service.print_ha_log()
+                    self.service.print_ha_log()
                 elif opt == "--up":
-                    service.upgrade_python3()
+                    self.service.upgrade_python3()
                 elif opt == "--sh":
-                    service.start_ha()
+                    self.service.start_ha()
                 elif opt == "--sth":
-                    service.stop_ha()
+                    self.service.stop_ha()
                 elif opt == "--id":
-                    service.install_docker()
+                    self.service.install_docker()
 
         except getopt.GetoptError:
             Logger.error("[ERROR] 没有这个选项, 请查看可用选项")
