@@ -647,7 +647,7 @@ class Install:
 
         except getopt.GetoptError:
             Logger.error("[ERROR] 没有这个选项, 请查看可用选项")
-            help()
+            self.help_()
 
 
 if __name__ == '__main__':
