@@ -5,7 +5,6 @@ import time
 import os
 from pathlib import Path
 import getpass
-import getpass
 
 
 username = getpass.getuser()
@@ -174,6 +173,9 @@ class BaseService:
     def install_samba(self):
         return
 
+    def install_docker(self):
+        return
+
 
 class UbuntuService(BaseService):
     def __init__(self):
@@ -222,13 +224,13 @@ class UbuntuService(BaseService):
         super().auto_start_ha()
 
     def install_mqtt_broker(self):
-        super().install_mqtt_broker()
+        Logger.warn("[WARNING] 暂不支持")
 
     def change_pip_source(self):
-        super().change_pip_source()
+        Logger.warn("[WARNING] 暂不支持")
 
     def change_apt_source(self):
-        super().change_apt_source()
+        Logger.warn("[WARNING] 暂不支持")
 
     def upgrade_python3(self):
         base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -270,15 +272,18 @@ class UbuntuService(BaseService):
         subprocess.run("ln -s /usr/python3.7/bin/python3 /usr/bin/python3", shell=True)
 
     def set_wifi(self):
-        return super().set_wifi()
+        Logger.warn("[WARNING] 暂不支持")
+
+    def install_docker(self):
+        Logger.warn("[WARNING] 暂不支持")
 
 
 # 树莓派
 class DebianService(BaseService):
     def __init__(self):
+        super().__init__()
         self.pip_source_path = "/etc/pip.conf"
         self.apt_source_path = "/etc/apt/sources.list"
-        self.auto_start_conf_add = "/etc/systemd/system/home-assistant@pi.service"
         self.smb_conf_path = "/etc/samba/smb.conf"
         self.wifi_conf_path = "/etc/wpa_supplicant/wpa_supplicant.conf"
         self.mosquitto_config_path = "/etc/mosquitto/mosquitto.conf"
@@ -311,75 +316,50 @@ class DebianService(BaseService):
             Logger.warn("[WARNING] SSID不能为空")
             self.set_wifi()
 
-    # 获取当前Python版本
     @staticmethod
     def get_python_version():
+        super().get_python_version()
 
-        Logger.info("[INFO] Python3 版本")
-        code = subprocess.run("python3 -V", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 未找到Python3")
-
-        Logger.info("[INFO] Python2 版本")
-        code = subprocess.run("python -V", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 未找到Python2")
-
-    # 获取当前HA版本
     @staticmethod
     def get_ha_version():
-        code = subprocess.run("hass --version", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 未安装HomeAssistant")
+        super().get_ha_version()
 
     # 换源 更换清华源 pip同步时间 5min
     def change_pip_source(self):
-        code = subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 没有找到pip文件,准备建立pip文件")
-
-            time.sleep(2)
+        try:
+            subprocess.run("sudo mv /etc/pip.conf /etc/pip.conf.bak", shell=True, check=True)
             with open(self.pip_source_path, 'w+') as f:
                 f.write("[global]\n"
                         "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
                 Logger.info("[INFO] 写入pip文件成功")
-
-        elif code.returncode == 0:
+        except subprocess.CalledProcessError:
+            Logger.error("[ERROR] 没有找到pip文件,准备建立pip文件")
             with open(self.pip_source_path, 'w+') as f:
                 f.write("[global]\n"
                         "index-url = https://pypi.tuna.tsinghua.edu.cn/simple")
                 Logger.info("[INFO] 写入pip文件成功")
 
     def change_apt_source(self):
-        code = subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak", shell=True)
-        if code.returncode != 0:
+        try:
+            subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak", shell=True, check=True)
+            with open(self.apt_source_path, 'w+') as f:
+                f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
+                        "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
+                Logger.info("[INFO] 写入apt文件成功")
+        except subprocess.CalledProcessError:
             Logger.error("[INFO] 找不到apt文件,准备建立apt文件")
             time.sleep(2)
             with open(self.apt_source_path, 'w+') as f:
                 f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
                         "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
                 Logger.info("[INFO] 写入apt文件成功")
-
-        elif code.returncode == 0:
-            with open(self.apt_source_path, 'w+') as f:
-                f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
-                        "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
-                Logger.info("[INFO] 写入apt文件成功")
-
         self.prepare()
 
     def prepare(self):
         super().prepare()
 
-    # 更新HomeAssistant
     def upgrade_ha(self):
-        Logger.info("[INFO] 准备更新HomeAssistant")
-
-        code = subprocess.run("sudo pip3 install -U homeassistant", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 更新HomeAssistant失败,请检查网络, 两秒后准备重新安装...")
-            time.sleep(2)
-            self.upgrade_ha()
+        super().upgrade_ha()
 
     def upgrade_specific_ha(self):
         super().upgrade_specific_ha()
@@ -387,24 +367,8 @@ class DebianService(BaseService):
     def install_ha(self):
         super().install_ha()
 
-    # HA 自启动
     def auto_start_ha(self):
-        Logger.info("[INFO] 准备配置HomeAssistant自启动")
-
-        try:
-            with open(self.auto_start_conf_add, "w+") as f:
-                f.write("[Unit]\n"
-                        "Description=Home Assistant\n"
-                        "After=network.target\n\n"
-                        "[Service]\n"
-                        "Type=simple\n"
-                        "User=%i\n"
-                        "ExecStart=/usr/local/bin/hass\n\n"
-                        "[Install]\n"
-                        "WantedBy=multi-user.target\n")
-            Logger.info("[INFO] HomeAssistant自启动建立成功")
-        except FileNotFoundError:
-            Logger.error("[ERROR] 自启动建立失败,请检查自启动配置路径.")
+        super().auto_start_ha()
 
     # samba安装 TODO
     def install_samba(self):
@@ -444,13 +408,8 @@ class DebianService(BaseService):
         Logger.info("[INFO] 准备安装Mosquitto")
 
         self.prepare()
-        code = subprocess.run("sudo apt-get install mosquitto", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 安装mosquitto失败,请检查网络连接,两秒后准备重新安装")
-
-            time.sleep(2)
-            self.install_mqtt_broker()
-        elif code.returncode == 0:
+        try:
+            subprocess.run("sudo apt-get install mosquitto", shell=True, check=True)
             try:
                 with open(self.mosquitto_config_path, "w+") as f:
                     f.write("allow_anonymous false\n"
@@ -460,41 +419,26 @@ class DebianService(BaseService):
 
             except FileNotFoundError:
                 Logger.error("[ERROR] 未发现mqtt配置文件,请重新安装...")
-
             mqtt_user_name = input("请输入MQTT用户名:")
-
             subprocess.run("sudo mosquitto_passwd -c /etc/mosquitto/pwfile {}".format(mqtt_user_name), shell=True)
             subprocess.run("sudo systemctl start mosquitto.service", shell=True)
             Logger.info("[INFO] MQTT安装配置成功")
+        except subprocess.CalledProcessError:
+            Logger.error("[ERROR] 安装mosquitto失败,请检查网络连接,两秒后准备重新安装")
+            time.sleep(2)
+            self.install_mqtt_broker()
 
-    # 重启HA
     def restart_ha(self):
-        code = subprocess.run("sudo systemctl restart home-assistant@pi", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 重启HomeAssistant失败")
-        else:
-            Logger.info("[INFO] 重启HomeAssistant成功")
+        super().restart_ha()
 
     def start_ha(self):
-        code = subprocess.run("sudo systemctl start home-assistant@pi", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 启动HomeAssistant失败")
-        else:
-            Logger.info("[INFO] 启动HomeAssistant成功")
+        super().start_ha()
 
     def stop_ha(self):
-        code = subprocess.run("sudo systemctl stop home-assistant@pi", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 停止HomeAssistant失败")
-        else:
-            Logger.info("[INFO] 停止HomeAssistant成功")
+        super().stop_ha()
 
     def print_ha_log(self):
-        code = subprocess.run("sudo journalctl -f -u home-assistant@pi", shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 查看HomeAssistant日志失败")
-        else:
-            Logger.info("[INFO] 查看HomeAssistant日志成功")
+        super().print_ha_log()
 
     # 更新Python3版本
     def upgrade_python3(self):
@@ -608,82 +552,92 @@ class DebianService(BaseService):
                     #     f.write()
 
 
-# class Install:
-#     try:
-#         opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
-#                                                               "rh", "phl", "up", "ush", "sh", "sth", "id", "uup"])
-#         service = DebianService()
-#         ubuntuservice = UbuntuService()
-#         for opt, value in opts:
-#             if opt == "-h" or opt == "--help":
-#                 Logger.info("-h 显示帮助")
-#                 Logger.info("-w 添加wifi配置")
-#                 Logger.info("-p 更新软件包列表与软件")
-#                 Logger.info("-s 安装samba服务")
-#                 Logger.info("--im 安装mosquitto")
-#                 Logger.info("-" * 30)
-#                 Logger.info("--cps 更换pip源")
-#                 Logger.info("--cas 更换apt源")
-#                 Logger.info("-" * 30)
-#                 Logger.info("--ih 安装HomeAssistant")
-#                 Logger.info("--uh 更新HomeAssistant")
-#                 Logger.info("--has 配置HomeAssistant自启动")
-#                 Logger.info("--sh 运行HomeAssistant实例")
-#                 Logger.info("--sth 停止HomeAssistant实例")
-#                 Logger.info("--rh 重启HomeAssistant")
-#                 Logger.info("--phl 查看HomeAssistant日志")
-#                 Logger.info("--hv 查看HomeAssistant版本")
-#                 Logger.info("-" * 30)
-#                 Logger.info("--pv 查看Python版本")
-#                 Logger.info("--up 更新Python3版本")
-#                 Logger.info("-" * 30)
-#                 Logger.info("--id 安装docker CE")
-#
-#             elif opt == "-w":
-#                 service.set_wifi()
-#             elif opt == "-p":
-#                 service.prepare()
-#             elif opt == "-s":
-#                 service.install_samba()
-#             elif opt == "--pv":
-#                 service.get_python_version()
-#             elif opt == "--hv":
-#                 service.get_ha_version()
-#             elif opt == "--cps":
-#                 service.change_pip_source()
-#             elif opt == "--cas":
-#                 service.change_apt_source()
-#             elif opt == "--uh":
-#                 service.upgrade_ha()
-#             elif opt == "--usp":
-#                 service.upgrade_specific_ha()
-#             elif opt == "--ih":
-#                 service.install_ha()
-#             elif opt == "--has":
-#                 service.ha_auto_start()
-#             elif opt == "--im":
-#                 service.install_mosquitto()
-#             elif opt == "--rh":
-#                 service.restart_ha()
-#             elif opt == "--phl":
-#                 service.print_ha_log()
-#             elif opt == "--up":
-#                 service.upgrade_python()
-#             elif opt == "--sh":
-#                 service.start_ha()
-#             elif opt == "--sth":
-#                 service.stop_ha()
-#             elif opt == "--id":
-#                 service.install_docker()
-#             elif opt == "--uup":
-#                 ubuntuservice.upgrade_python3()
-#     except getopt.GetoptError:
-#         Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
+class Install:
+    global service
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
+                                                              "rh", "phl", "up", "ush", "sh", "sth", "id"])
+        import platform
+        system = platform.system()
+        if system == "Windows":
+            Logger.error("[ERROR] 不支持Windows操作系统")
+        elif system == "Linux":
+            out = subprocess.check_output("cat /etc/os-release", shell=True)
+            out = out.decode("utf-8")
+            if "NAME=\"Ubuntu\"" in out:
+                Logger.info("[INFO] 检测到Ubuntu系统")
+                service = UbuntuService()
+            else:
+                Logger.info("[INFO] 检测到Debian操作系统")
+                service = DebianService()
+
+        for opt, value in opts:
+            if opt == "-h" or opt == "--help":
+                Logger.info("-h 显示帮助")
+                Logger.info("-w 添加wifi配置")
+                Logger.info("-p 更新软件包列表与软件")
+                Logger.info("-s 安装samba服务")
+                Logger.info("--im 安装MQTT Broker")
+                Logger.info("-" * 30)
+                Logger.info("--cps 更换pip源")
+                Logger.info("--cas 更换apt源")
+                Logger.info("-" * 30)
+                Logger.info("--ih 安装HomeAssistant")
+                Logger.info("--uh 更新HomeAssistant")
+                Logger.info("--has 配置HomeAssistant自启动")
+                Logger.info("--sh 运行HomeAssistant实例")
+                Logger.info("--sth 停止HomeAssistant实例")
+                Logger.info("--rh 重启HomeAssistant")
+                Logger.info("--phl 查看HomeAssistant日志")
+                Logger.info("--hv 查看HomeAssistant版本")
+                Logger.info("-" * 30)
+                Logger.info("--pv 查看Python版本")
+                Logger.info("--up 更新Python3版本")
+                Logger.info("-" * 30)
+                Logger.info("--id 安装docker CE")
+            elif opt == "-w":
+                service.set_wifi()
+            elif opt == "-p":
+                service.prepare()
+            elif opt == "-s":
+                service.install_samba()
+            elif opt == "--pv":
+                service.get_python_version()
+            elif opt == "--hv":
+                service.get_ha_version()
+            elif opt == "--cps":
+                service.change_pip_source()
+            elif opt == "--cas":
+                service.change_apt_source()
+            elif opt == "--uh":
+                service.upgrade_ha()
+            elif opt == "--usp":
+                service.upgrade_specific_ha()
+            elif opt == "--ih":
+                service.install_ha()
+            elif opt == "--has":
+                service.auto_start_ha()
+            elif opt == "--im":
+                service.install_mqtt_broker()
+            elif opt == "--rh":
+                service.restart_ha()
+            elif opt == "--phl":
+                service.print_ha_log()
+            elif opt == "--up":
+                service.upgrade_python3()
+            elif opt == "--sh":
+                service.start_ha()
+            elif opt == "--sth":
+                service.stop_ha()
+            elif opt == "--id":
+                service.install_docker()
+
+    except getopt.GetoptError:
+        Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
 
 
 if __name__ == '__main__':
     try:
-        # Install()
-        ...
+        Install()
     except PermissionError:
         Logger.error("[ERROR] 权限不足,请使用sudo权限运行此程序")
