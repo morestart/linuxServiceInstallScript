@@ -560,8 +560,7 @@ class Install:
         self.os_name = os_name
         self.service = ""
 
-    @staticmethod
-    def help():
+    def help_(self):
         Logger.info("-h 显示帮助")
         Logger.info("-w 添加wifi配置")
         Logger.info("-p 更新软件包列表与软件")
@@ -608,7 +607,7 @@ class Install:
 
             for opt, value in opts:
                 if opt == "-h" or opt == "--help":
-                    help()
+                    self.help_()
                 elif opt == "-w":
                     service.set_wifi()
                 elif opt == "-p":
