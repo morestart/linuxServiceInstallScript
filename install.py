@@ -277,6 +277,9 @@ class UbuntuService(BaseService):
     def install_docker(self):
         Logger.warn("[WARNING] 暂不支持")
 
+    def install_samba(self):
+        Logger.warn("[WARNING] 暂不支持")
+
 
 # 树莓派
 class DebianService(BaseService):
@@ -553,91 +556,105 @@ class DebianService(BaseService):
 
 
 class Install:
-    global service
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps", "cas", "uh", "ih", "has", "im",
-                                                              "rh", "phl", "up", "ush", "sh", "sth", "id"])
-        import platform
-        system = platform.system()
-        if system == "Windows":
-            Logger.error("[ERROR] 不支持Windows操作系统")
-        elif system == "Linux":
-            out = subprocess.check_output("cat /etc/os-release", shell=True)
-            out = out.decode("utf-8")
-            if "NAME=\"Ubuntu\"" in out:
-                Logger.info("[INFO] 检测到Ubuntu系统")
-                service = UbuntuService()
-            else:
-                Logger.info("[INFO] 检测到Debian操作系统")
-                service = DebianService()
+    def __init__(self, os_name):
+        self.os_name = os_name
+        self.service = ""
 
-        for opt, value in opts:
-            if opt == "-h" or opt == "--help":
-                Logger.info("-h 显示帮助")
-                Logger.info("-w 添加wifi配置")
-                Logger.info("-p 更新软件包列表与软件")
-                Logger.info("-s 安装samba服务")
-                Logger.info("--im 安装MQTT Broker")
-                Logger.info("-" * 30)
-                Logger.info("--cps 更换pip源")
-                Logger.info("--cas 更换apt源")
-                Logger.info("-" * 30)
-                Logger.info("--ih 安装HomeAssistant")
-                Logger.info("--uh 更新HomeAssistant")
-                Logger.info("--has 配置HomeAssistant自启动")
-                Logger.info("--sh 运行HomeAssistant实例")
-                Logger.info("--sth 停止HomeAssistant实例")
-                Logger.info("--rh 重启HomeAssistant")
-                Logger.info("--phl 查看HomeAssistant日志")
-                Logger.info("--hv 查看HomeAssistant版本")
-                Logger.info("-" * 30)
-                Logger.info("--pv 查看Python版本")
-                Logger.info("--up 更新Python3版本")
-                Logger.info("-" * 30)
-                Logger.info("--id 安装docker CE")
-            elif opt == "-w":
-                service.set_wifi()
-            elif opt == "-p":
-                service.prepare()
-            elif opt == "-s":
-                service.install_samba()
-            elif opt == "--pv":
-                service.get_python_version()
-            elif opt == "--hv":
-                service.get_ha_version()
-            elif opt == "--cps":
-                service.change_pip_source()
-            elif opt == "--cas":
-                service.change_apt_source()
-            elif opt == "--uh":
-                service.upgrade_ha()
-            elif opt == "--usp":
-                service.upgrade_specific_ha()
-            elif opt == "--ih":
-                service.install_ha()
-            elif opt == "--has":
-                service.auto_start_ha()
-            elif opt == "--im":
-                service.install_mqtt_broker()
-            elif opt == "--rh":
-                service.restart_ha()
-            elif opt == "--phl":
-                service.print_ha_log()
-            elif opt == "--up":
-                service.upgrade_python3()
-            elif opt == "--sh":
-                service.start_ha()
-            elif opt == "--sth":
-                service.stop_ha()
-            elif opt == "--id":
-                service.install_docker()
+    @staticmethod
+    def help():
+        Logger.info("-h 显示帮助")
+        Logger.info("-w 添加wifi配置")
+        Logger.info("-p 更新软件包列表与软件")
+        Logger.info("-s 安装samba服务")
+        Logger.info("--im 安装MQTT Broker")
+        Logger.info("-" * 30)
+        Logger.info("--cps 更换pip源")
+        Logger.info("--cas 更换apt源")
+        Logger.info("-" * 30)
+        Logger.info("--ih 安装HomeAssistant")
+        Logger.info("--uh 更新HomeAssistant")
+        Logger.info("--has 配置HomeAssistant自启动")
+        Logger.info("--sh 运行HomeAssistant实例")
+        Logger.info("--sth 停止HomeAssistant实例")
+        Logger.info("--rh 重启HomeAssistant")
+        Logger.info("--phl 查看HomeAssistant日志")
+        Logger.info("--hv 查看HomeAssistant版本")
+        Logger.info("-" * 30)
+        Logger.info("--pv 查看Python版本")
+        Logger.info("--up 更新Python3版本")
+        Logger.info("-" * 30)
+        Logger.info("--id 安装docker CE")
 
-    except getopt.GetoptError:
-        Logger.error("[ERROR] 没有这个选项, 请使用-h或--help查看可用选项")
+    def install(self):
+        global service
+        try:
+            opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps",
+                                                                  "cas", "uh", "ih", "has", "im",
+                                                                  "rh", "phl", "up", "ush", "sh", "sth", "id"])
+
+            if self.os_name == "Windows":
+                Logger.error("[ERROR] 不支持Windows操作系统")
+            elif self.os_name == "Linux":
+                out = subprocess.check_output("cat /etc/os-release", shell=True)
+                out = out.decode("utf-8")
+                if "NAME=\"Ubuntu\"" in out:
+                    Logger.info("[INFO] 检测到Ubuntu系统")
+                    self.service = UbuntuService()
+                elif "NAME=\"Debian\"" in out:
+                    Logger.info("[INFO] 检测到Debian操作系统")
+                    service = DebianService()
+                else:
+                    Logger.warn("[WARNING] 没有检测到操作系统版本")
+
+            for opt, value in opts:
+                if opt == "-h" or opt == "--help":
+                    help()
+                elif opt == "-w":
+                    service.set_wifi()
+                elif opt == "-p":
+                    service.prepare()
+                elif opt == "-s":
+                    service.install_samba()
+                elif opt == "--pv":
+                    service.get_python_version()
+                elif opt == "--hv":
+                    service.get_ha_version()
+                elif opt == "--cps":
+                    service.change_pip_source()
+                elif opt == "--cas":
+                    service.change_apt_source()
+                elif opt == "--uh":
+                    service.upgrade_ha()
+                elif opt == "--usp":
+                    service.upgrade_specific_ha()
+                elif opt == "--ih":
+                    service.install_ha()
+                elif opt == "--has":
+                    service.auto_start_ha()
+                elif opt == "--im":
+                    service.install_mqtt_broker()
+                elif opt == "--rh":
+                    service.restart_ha()
+                elif opt == "--phl":
+                    service.print_ha_log()
+                elif opt == "--up":
+                    service.upgrade_python3()
+                elif opt == "--sh":
+                    service.start_ha()
+                elif opt == "--sth":
+                    service.stop_ha()
+                elif opt == "--id":
+                    service.install_docker()
+
+        except getopt.GetoptError:
+            Logger.error("[ERROR] 没有这个选项, 请查看可用选项")
+            help()
 
 
 if __name__ == '__main__':
     try:
-        Install()
+        import platform
+        system = platform.system()
+        Install(system).install()
     except PermissionError:
         Logger.error("[ERROR] 权限不足,请使用sudo权限运行此程序")
