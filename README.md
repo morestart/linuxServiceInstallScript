@@ -5,6 +5,19 @@
 执行以下命令下载程序
 
 `sudo curl -O https://raw.githubusercontent.com/morestart/linuxServiceInstallScript/ubuntu/install.py`
+
+## 使用方式
+sudo python3 install.py 加上你要执行的命令，命令可以加多个 也可以只有一个
+
+## 示例
+以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
+
+`sudo python3 install.py -w --ih 0.94.0 --phl`
+
+升级Python3版本
+
+`sudo python3 install.py --up`
+
 ## 参数说明
 - `-w` 添加wifi配置
 - `-p` 更新软件包列表与软件
@@ -27,11 +40,4 @@
 - `--sth` 结束HA的运行
 
 
-## 示例
-以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
 
-`sudo python3 install.py -w --ih 0.94.0 --phl`
-
-升级Python3版本
-
-`sudo python3 install.py --up`
