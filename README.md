@@ -1,4 +1,4 @@
-# Raspberry Pi Service Install Script
+# Service Install Script
 
 ## Installation
  From curl:
