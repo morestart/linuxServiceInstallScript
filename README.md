@@ -51,6 +51,20 @@
 执行以下命令下载程序
 
 `sudo curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
+
+
+## 使用说明
+基础命令 `sudo python3 install.py [参数列表]`
+
+## 示例
+以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
+
+`sudo python3 install.py -w --ih --phl 0.94.0`
+
+升级Python3版本
+
+`sudo python3 install.py --up`
+
 ## 参数说明
 - `-w` 添加wifi配置
 - `-p` 更新软件包列表与软件
@@ -71,13 +85,3 @@
 - `--up` 更新Python版本为3.7.2
 - `--sh` 运行HA实例
 - `--sth` 结束HA的运行
-
-
-## 示例
-以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
-
-`sudo python3 install.py -w --ih 0.94.0 --phl`
-
-升级Python3版本
-
-`sudo python3 install.py --up`
