@@ -6,7 +6,7 @@
 
 `sudo curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
 
-基础命令 `sudo python3 install.py` [参数列表]
+基础命令 `sudo python3 install.py`  + [参数列表] (可以一次执行多个参数，执行顺序从左到右顺序执行)
 
 ## 示例
 以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
