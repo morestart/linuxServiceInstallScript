@@ -9,9 +9,9 @@
 基础命令 `sudo python3 install.py`  + [参数列表] (可以一次执行多个参数，执行顺序从左到右顺序执行)
 
 ## 示例
-以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
+以下命令作用:添加wifi配置 安装HA 打印HA log
 
-`sudo python3 install.py -w --ih --phl 0.94.0`
+`sudo python3 install.py -w --ih --phl`
 
 升级Python3版本
 
