@@ -52,9 +52,7 @@
 
 `sudo curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
 
-
-## 使用说明
-基础命令 `sudo python3 install.py [参数列表]`
+基础命令 `sudo python3 install.py` [参数列表]
 
 ## 示例
 以下命令作用:添加wifi配置 安装0.94版本HA 打印HA log
