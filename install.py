@@ -592,8 +592,8 @@ class Install:
 
     def install(self):
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["help", "pv", "hv", "cps",
-                                                                  "cas", "uh", "ih", "has", "im",
+            opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["pv", "hv", "cas", "cps",
+                                                                  "uh", "usp", "ih", "has", "im",
                                                                   "rh", "phl", "up", "ush", "sh", "sth", "id"])
 
             if self.os_name == "Windows":
