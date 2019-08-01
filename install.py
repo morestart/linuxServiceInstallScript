@@ -286,9 +286,6 @@ class UbuntuService(BaseService):
     def set_wifi(self):
         Logger.warn("[WARNING] 暂不支持Ubuntu")
 
-    def install_docker(self):
-        Logger.warn("[WARNING] 暂不支持Ubuntu")
-
     def install_samba(self):
         Logger.warn("[WARNING] 暂不支持Ubuntu")
 
