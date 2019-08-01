@@ -199,6 +199,7 @@ class UbuntuService(BaseService):
         super().get_python_version()
 
     def prepare(self):
+        super().prepare()
         try:
             subprocess.run("sudo apt install python3-pip", shell=True, check=True)
             Logger.info("[INFO] 安装pip3成功")
@@ -206,7 +207,6 @@ class UbuntuService(BaseService):
             Logger.error("[ERROR] 安装pip3失败，2s后准备重试...")
             time.sleep(2)
             self.prepare()
-        super().prepare()
 
     def get_ha_version(self):
         super().get_ha_version()
@@ -239,13 +239,13 @@ class UbuntuService(BaseService):
         super().auto_start_ha()
 
     def install_mqtt_broker(self):
-        Logger.warn("[WARNING] 暂不支持")
+        Logger.warn("[WARNING] 暂不支持Ubuntu")
 
     def change_pip_source(self):
-        Logger.warn("[WARNING] 暂不支持")
+        Logger.warn("[WARNING] 暂不支持Ubuntu")
 
     def change_apt_source(self):
-        Logger.warn("[WARNING] 暂不支持")
+        Logger.warn("[WARNING] 暂不支持Ubuntu")
 
     def upgrade_python3(self):
         base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -284,13 +284,60 @@ class UbuntuService(BaseService):
             self.upgrade_python3()
 
     def set_wifi(self):
-        Logger.warn("[WARNING] 暂不支持")
+        Logger.warn("[WARNING] 暂不支持Ubuntu")
 
     def install_docker(self):
-        Logger.warn("[WARNING] 暂不支持")
+        Logger.warn("[WARNING] 暂不支持Ubuntu")
 
     def install_samba(self):
-        Logger.warn("[WARNING] 暂不支持")
+        Logger.warn("[WARNING] 暂不支持Ubuntu")
+
+    def install_docker(self):
+        Logger.info("[INFO] 准备移除旧版本Docker")
+
+        subprocess.run("sudo apt remove docker docker-engine docker.io", check=True, shell=True)
+
+        Logger.info("[INFO] 准备安装docker依赖")
+        try:
+            subprocess.run("sudo apt install apt-transport-https ca-certificates curl software-properties-common",
+                           shell=True, check=True)
+            Logger.info("[INFO] 准备添加GPG密钥")
+            subprocess.run("curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/gpg | sudo apt-key add -",
+                           shell=True, check=True)
+            Logger.info("[INFO] 准备添加Docker软件源")
+            subprocess.run(
+                "sudo add-apt-repository \"deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu $(lsb_release -cs)  stable\"",
+                shell=True, check=True)
+            Logger.info("[INFO] 准备安装Docker CE")
+            self.prepare()
+            try:
+                subprocess.run("sudo apt install docker-ce", shell=True, check=True)
+                Logger.info("[INFO] 准备建立docker用户组")
+                subprocess.run("sudo groupadd docker", shell=True)
+                Logger.info("[INFO] 将当前用户加入docker组")
+                subprocess.run("sudo usermod -aG docker $USER", shell=True)
+                Logger.info("[INFO] 准备测试是否安装成功")
+                subprocess.run("docker run hello-world", shell=True)
+                Logger.info("[INFO] 准备启动docker ce")
+                subprocess.run("sudo systemctl enable docker", shell=True)
+                subprocess.run("sudo systemctl start docker", shell=True)
+
+                Logger.info("[INFO] 准备安装Docker图形管理界面")
+                try:
+                    subprocess.run("docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock dockerui/dockerui", shell=True, check=True)
+                except subprocess.CalledProcessError:
+                    Logger.error("[ERROR] 安装Docker图形管理界面失败,准备重新安装")
+                    time.sleep(2)
+                    self.install_docker()
+            except subprocess.CalledProcessError:
+                Logger.error("[ERROR] Docker CE安装失败，准备重新安装")
+                time.sleep(2)
+                self.install_docker()
+
+        except subprocess.CalledProcessError:
+            Logger.error("[ERROR] 依赖安装失败，准备重新安装")
+            time.sleep(2)
+            self.install_docker()
 
 
 # 树莓派
@@ -518,32 +565,21 @@ class DebianService(BaseService):
             self.prepare()
             self.flag = 1
         Logger.info("[INFO] 准备安装docker CE依赖")
-        code = subprocess.run(
-            "sudo apt-get install apt-transport-https ca-certificates gnupg2 lsb-release software-properties-common",
-            shell=True)
-        if code.returncode != 0:
-            Logger.error("[ERROR] 安装依赖失败,2s后准备重新安装...")
-            time.sleep(2)
-            self.install_docker()
-        else:
+        try:
+            subprocess.run(
+                "sudo apt-get install apt-transport-https ca-certificates gnupg2 lsb-release software-properties-common",
+                shell=True, check=True)
+
             Logger.info("[INFO] 准备添加GPG秘钥")
-            code = subprocess.run("curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/raspbian/gpg | sudo apt-key "
-                                  "add -", shell=True)
-            if code.returncode != 0:
-                Logger.error("[ERROR] 添加秘钥失败,2s后准备重新添加")
-                time.sleep(2)
-                self.install_docker()
-            else:
+            try:
+                subprocess.run("curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/raspbian/gpg | sudo apt-key "
+                               "add -", shell=True, check=True)
                 Logger.info("[INFO] 准备添加国内镜像源")
                 with open(self.apt_source_path, 'a') as f:
                     f.write("deb https://download.docker.com/linux/raspbian stretch stable")
                 self.prepare()
-                # TODO: 安装docker ce
-                code = subprocess.run("sudo apt-get install docker-ce", shell=True)
-                if code.returncode != 0:
-                    Logger.error("[ERROR] docker CE安装失败,准备重新安装...")
-                    self.install_docker()
-                else:
+                try:
+                    subprocess.run("sudo apt-get install docker-ce", shell=True, check=True)
                     Logger.info("[INFO] 准备建立用户组")
                     # 建立docker 用户组
                     subprocess.run("sudo groupadd docker", shell=True)
@@ -555,9 +591,17 @@ class DebianService(BaseService):
                     Logger.info("[INFO] 准备启动docker CE")
                     subprocess.run("sudo systemctl enable docker", shell=True)
                     subprocess.run("sudo systemctl start docker", shell=True)
-                    # Logger.info("[INFO] 配置镜像加速器")
-                    # with open(self.docker_mirror_path, "w+") as f:
-                    #     f.write()
+                except subprocess.CalledProcessError:
+                    Logger.error("[ERROR] docker CE安装失败,准备重新安装...")
+                    self.install_docker()
+            except subprocess.CalledProcessError:
+                Logger.error("[ERROR] 添加秘钥失败,2s后准备重新添加")
+                time.sleep(2)
+                self.install_docker()
+        except subprocess.CalledProcessError:
+            Logger.error("[ERROR] 安装依赖失败,2s后准备重新安装...")
+            time.sleep(2)
+            self.install_docker()
 
 
 class Install:
@@ -604,9 +648,11 @@ class Install:
                 if "NAME=\"Ubuntu\"" in out:
                     Logger.info("[INFO] 检测到Ubuntu系统")
                     self.service = UbuntuService()
+                    self.service.prepare()
                 elif "NAME=\"Debian\"" in out:
                     Logger.info("[INFO] 检测到Debian操作系统")
                     self.service = DebianService()
+                    self.service.prepare()
                 else:
                     Logger.warn("[WARNING] 没有检测到操作系统版本")
 
