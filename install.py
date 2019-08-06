@@ -644,11 +644,11 @@ class Install:
             elif self.os_name == "Linux":
                 out = subprocess.check_output("cat /etc/os-release", shell=True)
                 out = out.decode("utf-8")
-                if "NAME=\"Ubuntu\"" in out:
+                if "Ubuntu" in out:
                     Logger.info("[INFO] 检测到Ubuntu系统")
                     self.service = UbuntuService()
                     self.service.prepare()
-                elif "NAME=\"Debian\"" in out:
+                elif "Debian" in out:
                     Logger.info("[INFO] 检测到Debian操作系统")
                     self.service = DebianService()
                     self.service.prepare()
