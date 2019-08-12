@@ -321,9 +321,8 @@ class UbuntuService(BaseService):
 
                 Logger.info("[INFO] 准备安装Docker图形管理界面")
                 try:
-                    subprocess.run("sudo docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock dockerui/dockerui", shell=True, check=True)
                     subprocess.run("sudo docker volume create portainer_data", shell=True, check=True)
-                    subprocess.run("sudo docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer")
+                    subprocess.run("sudo docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer", shell=True, check=True)
                 except subprocess.CalledProcessError:
                     Logger.error("[ERROR] 安装Docker图形管理界面失败,准备重新安装")
                     time.sleep(2)
