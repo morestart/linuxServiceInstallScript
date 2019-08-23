@@ -401,9 +401,12 @@ class DebianService(BaseService):
         try:
             subprocess.run("sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak", shell=True, check=True)
             with open(self.apt_source_path, 'w+') as f:
-                f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib\n"
-                        "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib")
+                f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ buster main non-free contrib\n"
+                        "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ buster main non-free contrib")
                 Logger.info("[INFO] 写入apt文件成功")
+            subprocess.run("sudo rm -rf /etc/apt/sources.list.d/raspi.list", shell=True)
+            with open('/etc/apt/sources.list.d/raspi.list', 'w+') as f:
+                f.write("deb http://mirrors.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui")
         except subprocess.CalledProcessError:
             Logger.error("[INFO] 找不到apt文件,准备建立apt文件")
             time.sleep(2)
