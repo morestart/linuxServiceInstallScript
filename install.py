@@ -190,6 +190,14 @@ class BaseService:
     def install_docker(self):
         return
 
+    def install_portainer(self):
+        try:
+            subprocess.run("docker volume create portainer_data", check=True, shell=True)
+            subprocess.run("docker run -d -p 8000:8000 -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v "
+                           "portainer_data:/data portainer/portainer", check=True, shell=True)
+        except subprocess.CalledProcessError:
+            Logger.error("[ERROR] 请先安装docker ce")
+
 
 class UbuntuService(BaseService):
     def __init__(self):
@@ -336,6 +344,9 @@ class UbuntuService(BaseService):
             Logger.error("[ERROR] 依赖安装失败，准备重新安装")
             time.sleep(2)
             self.install_docker()
+
+    def install_portainer(self):
+        super().install_portainer()
 
 
 # 树莓派
@@ -604,6 +615,9 @@ class DebianService(BaseService):
             time.sleep(2)
             self.install_docker()
 
+    def install_portainer(self):
+        super().install_portainer()
+
 
 class Install:
     def __init__(self, os_name):
@@ -634,12 +648,13 @@ class Install:
         Logger.info("--up 更新Python3版本")
         Logger.info("-" * 30)
         Logger.info("--id 安装docker CE")
+        Logger.info("--ip 安装docker图形化管理工具")
 
     def install(self):
         try:
             opts, args = getopt.getopt(sys.argv[1:], "-w-p-s-h", ["pv", "hv", "cas", "cps",
                                                                   "uh", "usp", "ih", "has", "im",
-                                                                  "rh", "phl", "up", "ush", "sh", "sth", "id"])
+                                                                  "rh", "phl", "up", "ush", "sh", "sth", "id", "ip"])
 
             if self.os_name == "Windows":
                 raise Exception("[ERROR] 不支持Windows操作系统")
@@ -696,6 +711,8 @@ class Install:
                     self.service.stop_ha()
                 elif opt == "--id":
                     self.service.install_docker()
+                elif opt == "--ip":
+                    self.service.install_portainer()
 
         except getopt.GetoptError:
             self.help_info()
