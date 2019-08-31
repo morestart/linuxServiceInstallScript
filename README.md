@@ -4,7 +4,7 @@
 
 执行以下命令下载程序
 
-`sudo curl -O https://raw.githubusercontent.com/morestart/RaspbianInstallScript/master/install.py`
+`sudo curl -O https://raw.githubusercontent.com/morestart/linuxServiceInstallScript/master/install.py`
 
 基础命令 `sudo python3 install.py`  + [参数列表] (可以一次执行多个参数，执行顺序从左到右顺序执行)
 
