@@ -650,7 +650,7 @@ class Install:
                     Logger.info("[INFO] 检测到Ubuntu系统")
                     self.service = UbuntuService()
                     self.service.prepare()
-                elif "Debian" in out:
+                elif "Debian" or "debian" in out:
                     Logger.info("[INFO] 检测到Debian操作系统")
                     self.service = DebianService()
                     self.service.prepare()
