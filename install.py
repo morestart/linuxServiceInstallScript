@@ -311,7 +311,8 @@ class UbuntuService(BaseService):
                            shell=True, check=True)
             Logger.info("[INFO] 准备添加Docker软件源")
             subprocess.run(
-                "sudo add-apt-repository \"deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu $(lsb_release -cs)  stable\"",
+                "sudo add-apt-repository \"deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu $("
+                "lsb_release -cs)  stable\"",
                 shell=True, check=True)
             Logger.info("[INFO] 准备安装Docker CE")
             self.prepare()
@@ -330,7 +331,8 @@ class UbuntuService(BaseService):
                 Logger.info("[INFO] 准备安装Docker图形管理界面")
                 try:
                     subprocess.run("sudo docker volume create portainer_data", shell=True, check=True)
-                    subprocess.run("sudo docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer", shell=True, check=True)
+                    subprocess.run("sudo docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v "
+                                   "portainer_data:/data portainer/portainer", shell=True, check=True)
                 except subprocess.CalledProcessError:
                     Logger.error("[ERROR] 安装Docker图形管理界面失败,准备重新安装")
                     time.sleep(2)
@@ -547,7 +549,7 @@ class DebianService(BaseService):
                     try:
                         subprocess.run("sudo wget https://www.python.org/ftp/python/3.7.2/{}.tgz".format(pv),
                                        shell=True, check=True)
-                        Logger.info("[INFO] 开始解压安装包")
+                        Logger.info("[INFO] 开始解压")
                         time.sleep(2)
                         subprocess.run("sudo tar -zvxf {}.tgz".format(pv), shell=True)
                         os.chdir("{}/{}".format(base_dir, pv))
@@ -579,7 +581,8 @@ class DebianService(BaseService):
         Logger.info("[INFO] 准备安装docker CE依赖")
         try:
             subprocess.run(
-                "sudo apt-get install apt-transport-https ca-certificates gnupg2 lsb-release software-properties-common",
+                "sudo apt-get install apt-transport-https ca-certificates gnupg2 lsb-release "
+                "software-properties-common",
                 shell=True, check=True)
 
             Logger.info("[INFO] 准备添加GPG秘钥")
@@ -665,7 +668,7 @@ class Install:
                     Logger.info("[INFO] 检测到Ubuntu系统")
                     self.service = UbuntuService()
                     self.service.prepare()
-                elif "Debian" in out:
+                elif "debian" in out:
                     Logger.info("[INFO] 检测到Debian操作系统")
                     self.service = DebianService()
                     self.service.prepare()
