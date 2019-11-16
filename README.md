@@ -1,6 +1,7 @@
 # Service Install Script
 
-## 使用说明
+## 使用说明 
+支持debian10
 
 执行以下命令下载程序
 
