@@ -649,11 +649,11 @@ class Install:
                 if "Ubuntu" in out:
                     Logger.info("[INFO] 检测到Ubuntu系统")
                     # TODO: 这里要做一点系统判断 -h没必要执行更新代码
-                    # self.service = UbuntuService()
+                    self.service = UbuntuService()
                     # self.service.prepare()
                 elif "Debian" or "debian" in out:
                     Logger.info("[INFO] 检测到Debian操作系统")
-                    # self.service = DebianService()
+                    self.service = DebianService()
                     # self.service.prepare()
                 else:
                     Logger.warn("[WARNING] 没有检测到操作系统版本")
