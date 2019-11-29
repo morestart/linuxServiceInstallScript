@@ -239,7 +239,23 @@ class UbuntuService(BaseService):
         super().auto_start_ha()
 
     def install_mqtt_broker(self):
-        Logger.warn("[WARNING] 暂不支持Ubuntu")
+        Logger.info("[INFO] 准备安装Mosquitto Broker")
+        try:
+            subprocess.run("sudo apt install mosquitto mosquitto-clients", shell=True, check=True)
+            mqtt_user_name = input("请输入MQTT用户名:")
+            subprocess.run("sudo mosquitto_passwd -c /etc/mosquitto/passwd " + mqtt_user_name, shell=True, check=True)
+            try:
+                with open("/etc/mosquitto/conf.d/default.conf", "w+") as f:
+                    f.write("allow_anonymous false\n"
+                            "password_file /etc/mosquitto/pwfile\n"
+                            "listener 1883\n")
+                    Logger.info("[INFO] 写入MQTT配置成功!")
+            except FileNotFoundError:
+                Logger.error("[ERROR] 未发现mqtt配置文件,请重新安装...")
+        except subprocess.CalledProcessError:
+            Logger.error("安装失败,请重新安装")
+        finally:
+            subprocess.run("sudo systemctl restart mosquitto", shell=True, check=True)
 
     def change_pip_source(self):
         Logger.warn("[WARNING] 暂不支持Ubuntu")
